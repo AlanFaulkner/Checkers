@@ -109,16 +109,6 @@ namespace Checkers
                 }
             }
 
-            //// test print of possible moves
-            //for (int i = 0; i < PossibleMoves.Count; i++)
-            //{
-            //    for (int j = 0; j < PossibleMoves[i].Count; j++)
-            //    {
-            //        Console.Write(PossibleMoves[i][j] + " ");
-            //    }
-            //    Console.WriteLine();
-            //}
-
             AnaysizeJumps();
             List<double> Scores = MinMax(MoveScores);
 
@@ -216,7 +206,7 @@ namespace Checkers
                 MoveRow.AddRange(GameBoardTemp);
                 MoveRow.Add(GetScore(GameBoardTemp));
                 MoveScores.Add(MoveRow);
-                PrintGameBoard2D(GameBoardTemp);
+                //PrintGameBoard2D(GameBoardTemp);
                 Console.Write("Score: " + GetScore(GameBoardTemp) + "\n");
             }
         }
@@ -284,8 +274,10 @@ namespace Checkers
                 {
                     if (j == 0) { Console.Write("|"); }
                     Console.Write(" ");
-                    if (Board[8 * i + j] == 1) { Console.Write("O"); }
-                    else if (Board[8 * i + j] == -1) Console.Write("X");
+                    if (Board[8 * i + j] == 1) { Console.Write("o"); }
+                    else if (Board[8 * i + j] == -1) Console.Write("x");
+                    else if (Board[8 * i + j] == 2) { Console.Write("O"); }
+                    else if (Board[8 * i + j] == -2) { Console.Write("X"); }
                     else Console.Write(" ");
                     Console.Write(" |");
                 }
