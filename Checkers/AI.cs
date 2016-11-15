@@ -13,7 +13,7 @@ namespace Checkers
          * only one public function is present
          */
 
-        private int MaxDepth = 4;
+        private int MaxDepth = 6;
 
         public int MaximunDepth
         {
@@ -87,8 +87,8 @@ namespace Checkers
                 int Min = ScoredMoves.Last(), Max = ScoredMoves.Last(), MinI = 0, MaxI = 0;
                 for (int i = 0; i < ScoredMoves.Count; i++)
                 {
-                    if (ScoredMoves.Last() < Min) { Min = ScoredMoves.Last(); MinI = i; }
-                    else if (ScoredMoves.Last() > Max) { Max = ScoredMoves.Last(); MaxI = i; }
+                    if (ScoredMoves[i] < Min) { Min = ScoredMoves[i]; MinI = i; }
+                    else if (ScoredMoves[i] > Max) { Max = ScoredMoves[i]; MaxI = i; }
                 }
 
                 if (Player == 1)
@@ -114,8 +114,8 @@ namespace Checkers
                 int Min = ScoredMoves.Last(), Max = ScoredMoves.Last(), MinI = 0, MaxI = 0;
                 for (int i = 0; i < ScoredMoves.Count; i++)
                 {
-                    if (ScoredMoves.Last() < Min) { Min = ScoredMoves.Last(); MinI = i; }
-                    else if (ScoredMoves.Last() > Max) { Max = ScoredMoves.Last(); MaxI = i; }
+                    if (ScoredMoves[i] < Min) { Min = ScoredMoves[i]; MinI = i; }
+                    else if (ScoredMoves[i] > Max) { Max = ScoredMoves[i]; MaxI = i; }
                 }
 
                 if (Player == 1)
@@ -132,7 +132,7 @@ namespace Checkers
             }
         }
 
-        private List<int> PromotePawn(List<int> GameState)
+        public List<int> PromotePawn(List<int> GameState)
         {
            for (int i = 0; i < GameState.Count; i++)
             {
@@ -150,7 +150,7 @@ namespace Checkers
             bool A = true, B = true;
             
             // jump forward and left
-            if (X - 2 * Player < 8 && X - 2 * Player >= 0 && Y - 2 >= 0 && GameBoard[8*(X - Player)+(Y - 1)] == -Player && GameBoard[8*(X - (2 * Player))+(Y - 2)] == 0)
+            if (X - 2 * Player < 8 && X - 2 * Player >= 0 && Y - 2 >= 0 && (GameBoard[8*(X - Player)+(Y - 1)] == -Player || GameBoard[8 * (X - Player) + (Y - 1)] == -2*Player) && GameBoard[8*(X - (2 * Player))+(Y - 2)] == 0)
             {
                 List<int> Move = new List<int> { };
                 Move.AddRange(GameBoard);
@@ -164,7 +164,7 @@ namespace Checkers
 
 
             // jump forward and right
-            if (X - 2 * Player < 8 && X - 2 * Player >= 0 && Y + 2 >= 0 && GameBoard[8 * (X - Player) + (Y + 1)] == -Player && GameBoard[8 * (X - (2 * Player)) + (Y + 2)] == 0)
+            if (X - 2 * Player < 8 && X - 2 * Player >= 0 && Y + 2 < 8 && (GameBoard[8 * (X - Player) + (Y - 1)] == -Player || GameBoard[8 * (X - Player) + (Y - 1)] == -2*Player) && GameBoard[8 * (X - (2 * Player)) + (Y + 2)] == 0)
             {
                 List<int> Move = new List<int> { };
                 Move.AddRange(GameBoard);
@@ -194,55 +194,55 @@ namespace Checkers
             bool A = true, B = true, C = true, D = true;
 
             // jump Up and left
-            if (X - 2 * 1 < 8 && X - 2 * 1 >= 0 && Y - 2 >= 0 && GameBoard[8 * (X - 1) + (Y - 1)] == -Player && GameBoard[8 * (X - (2 * 1)) + (Y - 2)] == 0)
+            if (X - 1 < 8 && X - 1 >= 0 && X - 2 * 1 < 8 && X - 2 * 1 >= 0 && Y - 2 >= 0 && GameBoard[8 * (X - 1) + (Y - 1)] == -Player && GameBoard[8 * (X - (2 * 1)) + (Y - 2)] == 0)
             {
                 List<int> Move = new List<int> { };
                 Move.AddRange(GameBoard);
                 Move[8 * X + Y] = 0;
                 Move[8 * (X - 1) + (Y - 1)] = 0;
-                Move[8 * (X - (2 * 1)) + (Y - 2)] = Player;
+                Move[8 * (X - (2 * 1)) + (Y - 2)] = 2*Player;
 
-                JumpList.AddRange(_CanJump(Move, X - 2 * 1, Y - 2, Player));
+                JumpList.AddRange(_CanJumpQueen(Move, X - 2 * 1, Y - 2, Player));
             }
             else { A = false; }
 
 
             // jump up and right
-            if (X - 2 * 1 < 8 && X - 2 * 1 >= 0 && Y + 2 >= 0 && GameBoard[8 * (X - 1) + (Y + 1)] == -Player && GameBoard[8 * (X - (2 * 1)) + (Y + 2)] == 0)
+            if (X - 1 < 8 && X - 1 >= 0 && X - 2 * 1 < 8 && X - 2 * 1 >= 0 && Y + 2 >= 0 && GameBoard[8 * (X - 1) + (Y + 1)] == -Player && GameBoard[8 * (X - (2 * 1)) + (Y + 2)] == 0)
             {
                 List<int> Move = new List<int> { };
                 Move.AddRange(GameBoard);
                 Move[8 * X + Y] = 0;
                 Move[8 * (X - 1) + (Y + 1)] = 0;
-                Move[8 * (X - (2 * 1)) + (Y + 2)] = Player;
+                Move[8 * (X - (2 * 1)) + (Y + 2)] = 2*Player;
 
-                JumpList.AddRange(_CanJump(Move, X - 2 * Player, Y + 2, Player));
+                JumpList.AddRange(_CanJumpQueen(Move, X - 2 * Player, Y + 2, Player));
             }
             else { B = false; }
 
             // jump down and left
-            if (X + 2 * 1 < 8 && X + 2 * 1 >= 0 && Y - 2 >= 0 && GameBoard[8 * (X + 1) + (Y - 1)] == -Player && GameBoard[8 * (X + (2 * 1)) + (Y - 2)] == 0)
+            if (X + 1 < 8 && X + 1 >= 0 && X + 2 * 1 < 8 && X + 2 * 1 >= 0 && Y - 2 >= 0 && GameBoard[8 * (X + 1) + (Y - 1)] == -Player && GameBoard[8 * (X + (2 * 1)) + (Y - 2)] == 0)
             {
                 List<int> Move = new List<int> { };
                 Move.AddRange(GameBoard);
                 Move[8 * X + Y] = 0;
                 Move[8 * (X + 1) + (Y - 1)] = 0;
-                Move[8 * (X + (2 * 1)) + (Y - 2)] = Player;
+                Move[8 * (X + (2 * 1)) + (Y - 2)] = 2*Player;
 
-                JumpList.AddRange(_CanJump(Move, X + 2 * 1, Y - 2, Player));
+                JumpList.AddRange(_CanJumpQueen(Move, X + 2 * 1, Y - 2, Player));
             }
             else { C = false; }
 
             // jump down and right
-            if (X + 2 * 1 < 8 && X + 2 * 1 >= 0 && Y + 2 >= 0 && GameBoard[8 * (X + 1) + (Y + 1)] == -Player && GameBoard[8 * (X + (2 * 1)) + (Y + 2)] == 0)
+            if (X + 1 < 8 && X + 1 >= 0 && X + 2 * 1 < 8 && X + 2 * 1 >= 0 && Y + 2 >= 0 && GameBoard[8 * (X + 1) + (Y + 1)] == -Player && GameBoard[8 * (X + (2 * 1)) + (Y + 2)] == 0)
             {
                 List<int> Move = new List<int> { };
                 Move.AddRange(GameBoard);
                 Move[8 * X + Y] = 0;
                 Move[8 * (X + 1) + (Y + 1)] = 0;
-                Move[8 * (X + (2 * 1)) + (Y + 2)] = Player;
+                Move[8 * (X + (2 * 1)) + (Y + 2)] = 2*Player;
 
-                JumpList.AddRange(_CanJump(Move, X + 2 * Player, Y + 2, Player));
+                JumpList.AddRange(_CanJumpQueen(Move, X + 2 * Player, Y + 2, Player));
             }
             else { D = false; }
 
