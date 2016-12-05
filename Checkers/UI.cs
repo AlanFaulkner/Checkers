@@ -5,6 +5,7 @@ using System.Data;
 using System.Drawing;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
@@ -131,14 +132,10 @@ namespace Checkers
 
         private void AiMove()
         {
-            Game.Gameboard = GameAI.MinMaxMove(Game.Gameboard, Game.CurrentPlayer);
-            if (Game.CurrentPlayer == 1) { Game.CurrentPlayer = -1; }
-            else { Game.CurrentPlayer = 1; }
-
-            UpdateBoard();
-
-            //if (Player1.SelectedItem.ToString() != "Human" && Game.CurrentPlayer == 1) { AiMove(); }
-            //else if (Player2.SelectedItem.ToString() != "Human" && Game.CurrentPlayer == -1) { AiMove(); }
+            UI.ActiveForm.Text = "Thinking...";
+            Gameboard.Enabled = false;
+            backgroundWorker1.RunWorkerAsync();
+            
         }
 
 
@@ -527,6 +524,23 @@ namespace Checkers
             }
             
             return ValidPositions;
+        }
+
+        private void backgroundWorker1_DoWork(object sender, DoWorkEventArgs e)
+        {
+            Game.Gameboard = GameAI.MinMaxMove(Game.Gameboard, Game.CurrentPlayer);
+        }
+
+        private void backgroundWorker1_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
+        {
+            ActiveForm.Text = "Checkers";
+            if (Game.CurrentPlayer == 1) { Game.CurrentPlayer = -1; }
+            else { Game.CurrentPlayer = 1; }
+            Gameboard.Enabled = true;
+            UpdateBoard();
+
+            if (Player1.SelectedItem.ToString() != "Human" && Game.CurrentPlayer == 1) { AiMove(); }
+            else if (Player2.SelectedItem.ToString() != "Human" && Game.CurrentPlayer == -1) { AiMove(); }
         }
     }
 }

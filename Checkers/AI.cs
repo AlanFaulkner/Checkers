@@ -27,8 +27,8 @@ namespace Checkers
             int A = 0, B = 0;
             for (int i = 0; i < Board.Count; i++)
             {
-                if (Board[i] == 1) { A += Board[i]; }
-                else if (Board[i] == -1) { B += Board[i]; }
+                if (Board[i] > 0) { A += Board[i]; }
+                else if (Board[i] < 0) { B += Board[i]; }
             }
 
             if (Player == 1 && B == 0) { return 100; } // 100 point if win (this is randomly chosen)
@@ -132,7 +132,7 @@ namespace Checkers
             }
         }
 
-        public List<int> PromotePawn(List<int> GameState)
+        private List<int> PromotePawn(List<int> GameState)
         {
            for (int i = 0; i < GameState.Count; i++)
             {
@@ -148,10 +148,10 @@ namespace Checkers
             List<List<int>> JumpList = new List<List<int>> { };
 
             bool A = true, B = true;
-            
+
             // jump forward and left
-            if (X - 2 * Player < 8 && X - 2 * Player >= 0 && Y - 2 >= 0 && (GameBoard[8*(X - Player)+(Y - 1)] == -Player || GameBoard[8 * (X - Player) + (Y - 1)] == -2*Player) && GameBoard[8*(X - (2 * Player))+(Y - 2)] == 0)
-            {
+            if ((X - 2 * Player >= 0 && X - 2 * Player < 8) && (Y - 2 >= 0) && (GameBoard[8 * (X - Player) + (Y - 1)] == -Player || GameBoard[8 * (X - Player) + (Y - 1)] == -2 * Player) && GameBoard[8 * (X - (2 * Player)) + (Y - 2)] == 0)
+            { 
                 List<int> Move = new List<int> { };
                 Move.AddRange(GameBoard);
                 Move[8 * X + Y] = 0;
@@ -164,7 +164,7 @@ namespace Checkers
 
 
             // jump forward and right
-            if (X - 2 * Player < 8 && X - 2 * Player >= 0 && Y + 2 < 8 && (GameBoard[8 * (X - Player) + (Y - 1)] == -Player || GameBoard[8 * (X - Player) + (Y - 1)] == -2*Player) && GameBoard[8 * (X - (2 * Player)) + (Y + 2)] == 0)
+            if ((X - 2 * Player >= 0 && X - 2 * Player < 8) && (Y + 2 < 8) && (GameBoard[8 * (X - Player) + (Y + 1)] == -Player || GameBoard[8 * (X - Player) + (Y + 1)] == -2 * Player) && GameBoard[8 * (X - (2 * Player)) + (Y + 2)] == 0)
             {
                 List<int> Move = new List<int> { };
                 Move.AddRange(GameBoard);
