@@ -18,12 +18,18 @@ namespace Checkers
         int SelectedPiece = -1;
         bool JumpingMove = false;
         List<List<int>> Possiblemoves = new List<List<int>> { };
+        int GameNumber = 0;
+        int PlayerOneScore = 0;
+        int PlayerTwoScore = 0;
 
         public UI()
         {
             InitializeComponent();
             Player1.SelectedItem = "Human";
             Player2.SelectedItem = "Human";
+            Matches.SelectedItem = "1";
+            Jumping.SelectedItem = "True";
+
             List<Button> GameBoard = Gameboard.Controls.OfType<Button>().ToList();
             for (int i = 0; i < GameBoard.Count; i++)
             {
@@ -58,7 +64,7 @@ namespace Checkers
                     GameBoard[i].BackgroundImageLayout = ImageLayout.Stretch;
                     GameBoard[i].FlatStyle = FlatStyle.Flat;
                     GameBoard[i].FlatAppearance.BorderColor = Color.Black;
-                    GameBoard[i].Enabled = true;
+                    
                 }
                 else if (Game.Gameboard[i] == 2)
                 {
@@ -66,7 +72,7 @@ namespace Checkers
                     GameBoard[i].BackgroundImageLayout = ImageLayout.Stretch;
                     GameBoard[i].FlatStyle = FlatStyle.Flat;
                     GameBoard[i].FlatAppearance.BorderColor = Color.Black;
-                    GameBoard[i].Enabled = true;
+                    
                 }
                 else if (Game.Gameboard[i] == -1)
                 {
@@ -74,7 +80,7 @@ namespace Checkers
                     GameBoard[i].BackgroundImageLayout = ImageLayout.Stretch;
                     GameBoard[i].FlatStyle = FlatStyle.Flat;
                     GameBoard[i].FlatAppearance.BorderColor = Color.Black;
-                    GameBoard[i].Enabled = true;
+                    
                 }
                 else if (Game.Gameboard[i] == -2)
                 {
@@ -82,7 +88,7 @@ namespace Checkers
                     GameBoard[i].BackgroundImageLayout = ImageLayout.Stretch;
                     GameBoard[i].FlatStyle = FlatStyle.Flat;
                     GameBoard[i].FlatAppearance.BorderColor = Color.Black;
-                    GameBoard[i].Enabled = true;
+                    
                 }
                 else if (((i / 8) % 2 == 0 && (i % 8) % 2 == 0) || ((i / 8) % 2 != 0 && (i % 8) % 2 != 0))
                 {
@@ -90,7 +96,7 @@ namespace Checkers
                     GameBoard[i].BackColor = Color.Black;
                     GameBoard[i].FlatStyle = FlatStyle.Flat;
                     GameBoard[i].FlatAppearance.BorderColor = Color.Black;
-                    GameBoard[i].Enabled = true;
+                    
                 }
 
                 else
@@ -99,8 +105,10 @@ namespace Checkers
                     GameBoard[i].BackColor = Color.Gainsboro;
                     GameBoard[i].ForeColor = Color.Gainsboro;
                     GameBoard[i].FlatStyle = FlatStyle.Flat;
-                    GameBoard[i].Enabled = false;
+                    
                 }
+
+                GameBoard[i].Enabled = false;
             }
         }
 
@@ -109,11 +117,14 @@ namespace Checkers
             PlayButton.Enabled = false;
             Player1.Enabled = false;
             Player2.Enabled = false;
-
+            Matches.Enabled = false;
+            Jumping.Enabled = false;
+            Game.CurrentPlayer = 1;
+            
             // set AI difficulty if relevant
             if (Player1.SelectedItem.ToString() == "AI Easy" || Player2.SelectedItem.ToString() == "AI Easy") { GameAI.MaximunDepth = 4; }
-            else if (Player1.SelectedItem.ToString() == "AI Medium" || Player2.SelectedItem.ToString() == "AI Medium") { GameAI.MaximunDepth = 8; }
-            else if (Player1.SelectedItem.ToString() == "AI Hard" || Player2.SelectedItem.ToString() == "AI Hard") { GameAI.MaximunDepth = 12; }
+            else if (Player1.SelectedItem.ToString() == "AI Medium" || Player2.SelectedItem.ToString() == "AI Medium") { GameAI.MaximunDepth = 6; }
+            else if (Player1.SelectedItem.ToString() == "AI Hard" || Player2.SelectedItem.ToString() == "AI Hard") { GameAI.MaximunDepth = 8; }
 
             // Set up Board
             Gameboard.Enabled = true;
@@ -123,22 +134,31 @@ namespace Checkers
             // initalise score and player
             pictureBox1.Image = Properties.Resources.rebbellogo;
             pictureBox1.SizeMode = PictureBoxSizeMode.StretchImage;
+
             Score.Enabled = true;
+            PlayerOneScore = 0;
+            PlayerTwoScore = 0;
             Score.Text = "0 : 0";
+
+
+            GameNumber=1;
 
             // Play game
             if (Player1.SelectedItem.ToString() != "Human") { AiMove(); }
+            GenerateValidMoves(Game.CurrentPlayer);
         }
 
         private void AiMove()
         {
             UI.ActiveForm.Text = "Thinking...";
             Gameboard.Enabled = false;
-            backgroundWorker1.RunWorkerAsync();
-            
+            if (GenerateValidMoves(Game.CurrentPlayer) == true) { backgroundWorker1.RunWorkerAsync();}
+            else {
+                UI.ActiveForm.Text = "Checkers";
+                EndGame();
+            }            
         }
-
-
+        
         private void Button_Click(object sender, EventArgs e)
         {
             var Button = (Button)sender;
@@ -160,10 +180,43 @@ namespace Checkers
                     // Looks for possible jumping moves that a given piece can make else shows no jumping moves.
                     JumpingMove = true;
                     Possiblemoves = _CanJump(Game.Gameboard, SelectedPiece / 8, SelectedPiece % 8, Game.CurrentPlayer);
+                    for (int i = 0; i < Possiblemoves.Count; i++)
+                    {
+                        // Highlight or unhighlight possible move locations.
+                        if (GameBoardDisplay[Possiblemoves[i][1]].FlatAppearance.BorderColor == Color.Green)
+                        {
+                            GameBoardDisplay[Possiblemoves[i][1]].FlatAppearance.BorderSize = 3;
+                            GameBoardDisplay[Possiblemoves[i][1]].FlatAppearance.BorderColor = Color.Black;
+                            GameBoardDisplay[Possiblemoves[i][1]].Enabled = false;
+                        }
+                        else
+                        {
+                            GameBoardDisplay[Possiblemoves[i][1]].FlatAppearance.BorderSize = 3;
+                            GameBoardDisplay[Possiblemoves[i][1]].FlatAppearance.BorderColor = Color.Green;
+                            GameBoardDisplay[Possiblemoves[i][1]].Enabled = true;
+                        }
+                    }
+
                     if (!Possiblemoves.Any())
                     {
                         JumpingMove = false;
                         Possiblemoves = _CanMove(Game.Gameboard, SelectedPiece / 8, SelectedPiece % 8, Game.CurrentPlayer);
+                        for (int i = 0; i < Possiblemoves.Count; i++)
+                        {
+                            // Highlight or unhighlight possible move locations.
+                            if (GameBoardDisplay[Possiblemoves[i][0]].FlatAppearance.BorderColor == Color.Red)
+                            {
+                                GameBoardDisplay[Possiblemoves[i][0]].FlatAppearance.BorderSize = 3;
+                                GameBoardDisplay[Possiblemoves[i][0]].FlatAppearance.BorderColor = Color.Black;
+                                GameBoardDisplay[Possiblemoves[i][0]].Enabled = false;
+                            }
+                            else
+                            {
+                                GameBoardDisplay[Possiblemoves[i][0]].FlatAppearance.BorderSize = 3;
+                                GameBoardDisplay[Possiblemoves[i][0]].FlatAppearance.BorderColor = Color.Red;
+                                GameBoardDisplay[Possiblemoves[i][0]].Enabled = true;
+                            }
+                        }
                     }
 
                     // Determine is any moves for that piece are possible throw error if there are none.
@@ -188,11 +241,23 @@ namespace Checkers
                 // De-select piece.
                 if (Convert.ToInt32(Button.Tag) == SelectedPiece)
                 {
-                    if (JumpingMove == true) { _CanJump(Game.Gameboard, SelectedPiece / 8, SelectedPiece % 8, Game.CurrentPlayer); }
-                    else { _CanMove(Game.Gameboard, SelectedPiece / 8, SelectedPiece % 8, Game.CurrentPlayer); }
-                    
-                    GameBoardDisplay[SelectedPiece].FlatAppearance.BorderSize = 3;
-                    GameBoardDisplay[SelectedPiece].FlatAppearance.BorderColor = Color.Black;
+                    GameBoardDisplay[SelectedPiece].FlatAppearance.BorderSize = 2;
+                    GameBoardDisplay[SelectedPiece].FlatAppearance.BorderColor = Color.Blue;
+
+                    for (int i = 0; i < Possiblemoves.Count; i++)
+                    {
+                        // Highlight or unhighlight possible move locations.
+                        if (GameBoardDisplay[Possiblemoves[i][0]].FlatAppearance.BorderColor == Color.Red)
+                        {
+                            GameBoardDisplay[Possiblemoves[i][0]].FlatAppearance.BorderSize = 3;
+                            GameBoardDisplay[Possiblemoves[i][0]].FlatAppearance.BorderColor = Color.Black;
+                        }
+                        else
+                        {
+                            GameBoardDisplay[Possiblemoves[i][0]].FlatAppearance.BorderSize = 3;
+                            GameBoardDisplay[Possiblemoves[i][0]].FlatAppearance.BorderColor = Color.Red;
+                        }
+                    }
                     SelectedPiece = -1;
                 }
 
@@ -237,19 +302,35 @@ namespace Checkers
                             // check to see if any more jumps are now possible and if not end players turn.
 
                             Possiblemoves = _CanJump(Game.Gameboard, SelectedPiece / 8, SelectedPiece % 8, Game.CurrentPlayer);
+                            for (int i = 0; i < Possiblemoves.Count; i++)
+                            {
+                                // Highlight or unhighlight possible move locations.
+                                if (GameBoardDisplay[Possiblemoves[i][1]].FlatAppearance.BorderColor == Color.Green)
+                                {
+                                    GameBoardDisplay[Possiblemoves[i][1]].FlatAppearance.BorderSize = 3;
+                                    GameBoardDisplay[Possiblemoves[i][1]].FlatAppearance.BorderColor = Color.Black;
+                                    GameBoardDisplay[Possiblemoves[i][1]].Enabled = false;
+                                }
+                                else
+                                {
+                                    GameBoardDisplay[Possiblemoves[i][1]].FlatAppearance.BorderSize = 3;
+                                    GameBoardDisplay[Possiblemoves[i][1]].FlatAppearance.BorderColor = Color.Green;
+                                    GameBoardDisplay[Possiblemoves[i][1]].Enabled = true;
+                                }
+                            }
                             if (!Possiblemoves.Any())
                             {
                                 JumpingMove = false;
 
                                 SelectedPiece = -1;
-                                UpdateScore();
-                                if (Game.CurrentPlayer == 1)
+                              if (Game.CurrentPlayer == 1)
                                 {
                                     Game.CurrentPlayer = -1;
                                     pictureBox1.Image = Properties.Resources.Empirelogo;
                                     pictureBox1.SizeMode = PictureBoxSizeMode.StretchImage;
                                 }
                                 else { Game.CurrentPlayer = 1; pictureBox1.Image = Properties.Resources.rebbellogo; pictureBox1.SizeMode = PictureBoxSizeMode.StretchImage; }
+                              
                             }
 
                         }
@@ -257,13 +338,14 @@ namespace Checkers
                         else
                         {
                             SelectedPiece = -1;
-                            UpdateScore();
-                            if (Game.CurrentPlayer == 1) {
+                         if (Game.CurrentPlayer == 1) {
                                 Game.CurrentPlayer = -1;
                                 pictureBox1.Image = Properties.Resources.Empirelogo;
                                 pictureBox1.SizeMode = PictureBoxSizeMode.StretchImage;
+                                
                             }
                             else { Game.CurrentPlayer = 1; pictureBox1.Image = Properties.Resources.rebbellogo; pictureBox1.SizeMode = PictureBoxSizeMode.StretchImage; }
+                           
                         }
 
                     }
@@ -274,41 +356,64 @@ namespace Checkers
                         // throw error if selected move is not valid.
                         MessageBox.Show("Please select a valid move for that piece!");
                     }
+
+                    
                 }
 
             }
 
-            EndGame();
-
             if (Player1.SelectedItem.ToString() != "Human" && Game.CurrentPlayer == 1) { AiMove(); }
             else if (Player2.SelectedItem.ToString() != "Human" && Game.CurrentPlayer == -1) { AiMove(); }
-
+            else { EndGame(); }
         }
 
         private void UpdateScore()
         {
-            int P1 = 0, P2 = 0;
-            for (int i = 0; i < Game.Gameboard.Count; i++)
-            {
-                if (Game.Gameboard[i] > 0)
-                {
-                    P1 += Game.Gameboard[i];
-                }
-                else if (Game.Gameboard[i] < 0)
-                {
-                    P2 += Math.Abs(Game.Gameboard[i]);
-                }
-            }
+            if (Game.CurrentPlayer == 1) { PlayerTwoScore++; }
+            else { PlayerOneScore++; }
 
-            Score.Text = ((P1 - P2).ToString() + " : " + (P2 - P1).ToString());
+            Score.Text = PlayerOneScore + " : " + PlayerTwoScore;
         }
 
         private void EndGame()
         {
-            int A = 0, B = 0;
+            int A = 0, B=0;
             for (int i = 0; i < Game.Gameboard.Count; i++) { if (Game.Gameboard[i] > 0) { A++; } else if (Game.Gameboard[i] < 0) { B++; } }
-            if (A > 0 && B > 0) { return; } // still pieces on board
-            else { MessageBox.Show("Game Over!"); Gameboard.Enabled = false; PlayButton.Enabled = true; Player1.Enabled = true; Player2.Enabled = true; }
+            if (A > 0 && B > 0 && GenerateValidMoves(Game.CurrentPlayer) == true) { return; } // still pieces on board that can make valid moves
+            else if (GameNumber < Convert.ToInt32(Matches.SelectedItem) && GenerateValidMoves(Game.CurrentPlayer) == false) // more games to play but player has no moves left in current game
+            {
+                MessageBox.Show("Round over");
+                UpdateScore();
+                GameNumber++;
+                Game.CurrentPlayer = 1;
+
+                // Reset game for next round.
+
+                // Set up Board
+                Game.SetUpBoard();
+                UpdateBoard();
+
+                // initalise score and player
+                pictureBox1.Image = Properties.Resources.rebbellogo;
+                pictureBox1.SizeMode = PictureBoxSizeMode.StretchImage;
+
+                // Play game
+                if (Player1.SelectedItem.ToString() != "Human") { AiMove(); }
+                GenerateValidMoves(Game.CurrentPlayer);
+            }
+
+            else // All matches played
+                {
+                    UpdateScore();
+                    MessageBox.Show("Game Over!");
+                    Gameboard.Enabled = false;
+                    PlayButton.Enabled = true;
+                    Player1.Enabled = true;
+                    Player2.Enabled = true;
+                Matches.Enabled = true;
+                Jumping.Enabled = true;
+                
+            }
         }
 
         private List<List<int>> _CanJump(List<int> GameBoard, int X, int Y, int Player)
@@ -329,18 +434,6 @@ namespace Checkers
                 {
                     List<int> JumpFL = new List<int> { 8 * (X - Player) + (Y - 1), 8 * (X - (2 * Player)) + (Y - 2) };
                     ValidPositions.Add(JumpFL);
-
-                    // Highlight or unhighlight possible move locations.
-                    if (GameBoardDisplay[8 * (X - (2 * Player)) + (Y - 2)].FlatAppearance.BorderColor == Color.LawnGreen)
-                    {
-                        GameBoardDisplay[8 * (X - (2 * Player)) + (Y - 2)].FlatAppearance.BorderSize = 3;
-                        GameBoardDisplay[8 * (X - (2 * Player)) + (Y - 2)].FlatAppearance.BorderColor = Color.Black;
-                    }
-                    else
-                    {
-                        GameBoardDisplay[8 * (X - (2 * Player)) + (Y - 2)].FlatAppearance.BorderSize = 3;
-                        GameBoardDisplay[8 * (X - (2 * Player)) + (Y - 2)].FlatAppearance.BorderColor = Color.LawnGreen;
-                    }
                 }
 
 
@@ -349,18 +442,6 @@ namespace Checkers
                 {
                     List<int> JumpFR = new List<int> { 8 * (X - Player) + (Y + 1), 8 * (X - (2 * Player)) + (Y + 2) };
                     ValidPositions.Add(JumpFR);
-
-                    // Highlight or unhighlight possible move locations.
-                    if (GameBoardDisplay[8 * (X - (2 * Player)) + (Y + 2)].FlatAppearance.BorderColor == Color.LawnGreen)
-                    {
-                        GameBoardDisplay[8 * (X - (2 * Player)) + (Y + 2)].FlatAppearance.BorderSize = 3;
-                        GameBoardDisplay[8 * (X - (2 * Player)) + (Y + 2)].FlatAppearance.BorderColor = Color.Black;
-                    }
-                    else
-                    {
-                        GameBoardDisplay[8 * (X - (2 * Player)) + (Y + 2)].FlatAppearance.BorderSize = 3;
-                        GameBoardDisplay[8 * (X - (2 * Player)) + (Y + 2)].FlatAppearance.BorderColor = Color.LawnGreen;
-                    }
                 }
             }
 
@@ -371,18 +452,6 @@ namespace Checkers
                 {
                     List<int> JumpFL = new List<int> { 8 * (X + Player) + (Y - 1), 8 * (X + (2 * Player)) + (Y - 2) };
                     ValidPositions.Add(JumpFL);
-
-                    // Highlight or unhighlight possible move locations.
-                    if (GameBoardDisplay[8 * (X + (2 * Player)) + (Y - 2)].FlatAppearance.BorderColor == Color.LawnGreen)
-                    {
-                        GameBoardDisplay[8 * (X + (2 * Player)) + (Y - 2)].FlatAppearance.BorderSize = 3;
-                        GameBoardDisplay[8 * (X + (2 * Player)) + (Y - 2)].FlatAppearance.BorderColor = Color.Black;
-                    }
-                    else
-                    {
-                        GameBoardDisplay[8 * (X + (2 * Player)) + (Y - 2)].FlatAppearance.BorderSize = 3;
-                        GameBoardDisplay[8 * (X + (2 * Player)) + (Y - 2)].FlatAppearance.BorderColor = Color.LawnGreen;
-                    }
                 }
 
 
@@ -391,58 +460,35 @@ namespace Checkers
                 {
                     List<int> JumpFR = new List<int> { 8 * (X + Player) + (Y + 1), 8 * (X + (2 * Player)) + (Y + 2) };
                     ValidPositions.Add(JumpFR);
-
-                    // Highlight or unhighlight possible move locations.
-                    if (GameBoardDisplay[8 * (X + (2 * Player)) + (Y + 2)].FlatAppearance.BorderColor == Color.LawnGreen)
-                    {
-                        GameBoardDisplay[8 * (X + (2 * Player)) + (Y + 2)].FlatAppearance.BorderSize = 3;
-                        GameBoardDisplay[8 * (X + (2 * Player)) + (Y + 2)].FlatAppearance.BorderColor = Color.Black;
-                    }
-                    else
-                    {
-                        GameBoardDisplay[8 * (X + (2 * Player)) + (Y + 2)].FlatAppearance.BorderSize = 3;
-                        GameBoardDisplay[8 * (X + (2 * Player)) + (Y + 2)].FlatAppearance.BorderColor = Color.LawnGreen;
-                    }
                 }
             }
 
             return ValidPositions;
         }
-
-            
+   
         private List<List<int>> _CanMove(List<int> GameBoard, int X, int Y, int Player)
         {
             List<Button> GameBoardDisplay = Gameboard.Controls.OfType<Button>().ToList();
             GameBoardDisplay.Reverse(); // apparently the buttons are added backwards.
             List<List<int>> ValidPositions = new List<List<int>> { }; // store valid board locations at end of the move
 
-            // if piece is a pawn or a queen - can move forward only queen can move any number of squares in one direction for given diagonal
+            // Move direction is relative to white 
+            // If piece is a white pawn or a queen of any colour 
+            // White pawn can move forward only one square up left and up rigth.
+            // Queen can move any number of squares in one direction for given diagonal
 
-            if (Game.Gameboard[8 * X + Y] == Player || Game.Gameboard[8 * X + Y] == 2 * Player)
+            if (Game.Gameboard[8 * X + Y] == 1 || Math.Abs(Game.Gameboard[8 * X + Y]) == 2)
             {
                 // forward and left
                 int LUx = X, LUy = Y;
-                
-                while (LUy - 1 >= 0 && LUx - Player >= 0 && LUx - Player < 8 && Game.Gameboard[8 * (LUx - Player) + (LUy - 1)] == 0)
+
+                while (LUy - 1 >= 0 && LUx - 1 >= 0 && LUx - 1 < 8 && Game.Gameboard[8 * (LUx - 1) + (LUy - 1)] == 0)
                 {
 
-                    List<int> Left = new List<int> { 8 * (LUx - Player) + (LUy - 1) };
+                    List<int> Left = new List<int> { 8 * (LUx - 1) + (LUy - 1) };
                     ValidPositions.Add(Left);
-
-
-                    // Highlight or unhighlight possible move locations.
-                    if (GameBoardDisplay[8 * (LUx - Player) + (LUy - 1)].FlatAppearance.BorderColor == Color.Red)
-                    {
-                        GameBoardDisplay[8 * (LUx - Player) + (LUy - 1)].FlatAppearance.BorderSize = 3;
-                        GameBoardDisplay[8 * (LUx - Player) + (LUy - 1)].FlatAppearance.BorderColor = Color.Black;
-                    }
-                    else
-                    {
-                        GameBoardDisplay[8 * (LUx - Player) + (LUy - 1)].FlatAppearance.BorderSize = 3;
-                        GameBoardDisplay[8 * (LUx - Player) + (LUy - 1)].FlatAppearance.BorderColor = Color.Red;
-                    }
-
-                    if (Game.Gameboard[8 * X + Y] == Player) { break; } // break out of loop is pawn as can only move one square
+                    
+                    if (Game.Gameboard[8 * X + Y] == 1) { break; } // break out of loop is pawn as can only move one square
                     LUx--;
                     LUy--;
                 }
@@ -450,52 +496,31 @@ namespace Checkers
                 // forward and right
                 int RUx = X, RUy = Y;
 
-                while (RUy + 1 < 8 && RUx - Player >= 0 && RUx - Player < 8 && GameBoard[8 * (RUx - Player) + (RUy + 1)] == 0)
+                while (RUy + 1 < 8 && RUx - 1 >= 0 && RUx - 1 < 8 && GameBoard[8 * (RUx - 1) + (RUy + 1)] == 0)
                 {
-                    List<int> Right = new List<int> { 8 * (RUx - Player) + (RUy + 1) };
+                    List<int> Right = new List<int> { 8 * (RUx - 1) + (RUy + 1) };
                     ValidPositions.Add(Right);
-                    if (GameBoardDisplay[8 * (RUx - Player) + (RUy + 1)].FlatAppearance.BorderColor == Color.Red)
-                    {
-                        GameBoardDisplay[8 * (RUx - Player) + (RUy + 1)].FlatAppearance.BorderSize = 3;
-                        GameBoardDisplay[8 * (RUx - Player) + (RUy + 1)].FlatAppearance.BorderColor = Color.Black;
-                    }
-                    else
-                    {
-                        GameBoardDisplay[8 * (RUx - Player) + (RUy + 1)].FlatAppearance.BorderSize = 3;
-                        GameBoardDisplay[8 * (RUx - Player) + (RUy + 1)].FlatAppearance.BorderColor = Color.Red;
-                    }
 
-                    if (Game.Gameboard[8 * X + Y] == Player) { break; } // break out of loop is pawn as can only move one square
+                    if (Game.Gameboard[8 * X + Y] == 1) { break; } // break out of loop is pawn as can only move one square
                     RUx--;
                     RUy++;
                 }
             }
 
+            // Red Pawn
             // Queen can move backwards
-            if (Game.Gameboard[8 * X + Y] == 2 * Player)
+            if (Game.Gameboard[8 * X + Y] == -1 || Math.Abs(Game.Gameboard[8 * X + Y]) == 2)
             {
                 // Back and left
                 int LDx = X, LDy = Y;
 
-                while (LDy - 1 >= 0 && LDx + Player >= 0 && LDx + Player < 8 && Game.Gameboard[8 * (LDx + Player) + (LDy - 1)] == 0)
+                while (LDy - 1 >= 0 && LDx + 1 >= 0 && LDx + 1 < 8 && Game.Gameboard[8 * (LDx + 1) + (LDy - 1)] == 0)
                 {
 
-                    List<int> Left = new List<int> { 8 * (LDx + Player) + (LDy - 1) };
+                    List<int> Left = new List<int> { 8 * (LDx + 1) + (LDy - 1) };
                     ValidPositions.Add(Left);
-
-
-                    // Highlight or unhighlight possible move locations.
-                    if (GameBoardDisplay[8 * (LDx + Player) + (LDy - 1)].FlatAppearance.BorderColor == Color.Red)
-                    {
-                        GameBoardDisplay[8 * (LDx + Player) + (LDy - 1)].FlatAppearance.BorderSize = 3;
-                        GameBoardDisplay[8 * (LDx + Player) + (LDy - 1)].FlatAppearance.BorderColor = Color.Black;
-                    }
-                    else
-                    {
-                        GameBoardDisplay[8 * (LDx + Player) + (LDy - 1)].FlatAppearance.BorderSize = 3;
-                        GameBoardDisplay[8 * (LDx + Player) + (LDy - 1)].FlatAppearance.BorderColor = Color.Red;
-                    }
-
+                                        
+                    if (Game.Gameboard[8 * X + Y] == -1) { break; } // break out of loop is pawn as can only move one square
                     LDx++;
                     LDy--;
                 }
@@ -503,27 +528,70 @@ namespace Checkers
                 // forward and right
                 int RDx = X, RDy = Y;
 
-                while (RDy + 1 < 8 && RDx + Player >= 0 && RDx + Player < 8 && GameBoard[8 * (RDx + Player) + (RDy + 1)] == 0)
+                while (RDy + 1 < 8 && RDx + 1 >= 0 && RDx + 1 < 8 && GameBoard[8 * (RDx + 1) + (RDy + 1)] == 0)
                 {
-                    List<int> Right = new List<int> { 8 * (RDx + Player) + (RDy + 1) };
+                    List<int> Right = new List<int> { 8 * (RDx + 1) + (RDy + 1) };
                     ValidPositions.Add(Right);
-                    if (GameBoardDisplay[8 * (RDx + Player) + (RDy + 1)].FlatAppearance.BorderColor == Color.Red)
-                    {
-                        GameBoardDisplay[8 * (RDx + Player) + (RDy + 1)].FlatAppearance.BorderSize = 3;
-                        GameBoardDisplay[8 * (RDx + Player) + (RDy + 1)].FlatAppearance.BorderColor = Color.Black;
-                    }
-                    else
-                    {
-                        GameBoardDisplay[8 * (RDx + Player) + (RDy + 1)].FlatAppearance.BorderSize = 3;
-                        GameBoardDisplay[8 * (RDx + Player) + (RDy + 1)].FlatAppearance.BorderColor = Color.Red;
-                    }
 
+                    if (Game.Gameboard[8 * X + Y] == -1) { break; } // break out of loop is pawn as can only move one square
                     RDx++;
                     RDy++;
                 }
             }
             
             return ValidPositions;
+        }
+
+        private bool GenerateValidMoves(int Player)
+        {
+            // only allow moves that are valid ie play must jump
+            // also determines if any move are possible
+
+            List<Button> GameBoardDisplay = Gameboard.Controls.OfType<Button>().ToList();
+            GameBoardDisplay.Reverse(); // apparently the buttons are added backwards.
+            bool NumJumps = false;
+            int TotalNumberOfMoves = 0;
+            List<List<int>> Move = new List<List<int>> { };
+
+            // check for jumping moves first
+            for (int i = 0; i < Game.Gameboard.Count; i++)
+            {
+                if (Game.Gameboard[i] == Player || Game.Gameboard[i] == 2 * Player)
+                {
+                    Move = _CanJump(Game.Gameboard, i / 8, i % 8, Game.CurrentPlayer);
+                    if (Move.Any())
+                    {
+                        GameBoardDisplay[i].FlatAppearance.BorderColor = Color.Blue;
+                        GameBoardDisplay[i].FlatAppearance.BorderSize = 2;
+                        GameBoardDisplay[i].Enabled = true; // only valid moves are enabled.
+                        NumJumps = true;
+                        TotalNumberOfMoves++;
+                    }
+                }
+            }
+
+            if ( NumJumps == true && Jumping.SelectedItem.ToString() == "True") { return true; }
+            else 
+            {
+                for (int i = 0; i < Game.Gameboard.Count; i++)
+                {
+                    if (Game.Gameboard[i] == Player || Game.Gameboard[i] == 2 * Player)
+                    {
+
+                        Move = _CanMove(Game.Gameboard, i / 8, i % 8, Game.CurrentPlayer);
+                        if (Move.Any())
+                        {
+                            GameBoardDisplay[i].FlatAppearance.BorderColor = Color.Blue;
+                            GameBoardDisplay[i].FlatAppearance.BorderSize = 2;
+                            GameBoardDisplay[i].Enabled = true;
+                            TotalNumberOfMoves++;
+                        }
+                    }
+                }
+            }
+
+            if (TotalNumberOfMoves == 0 ) { return false; }
+            return true;
         }
 
         private void backgroundWorker1_DoWork(object sender, DoWorkEventArgs e)
@@ -534,13 +602,15 @@ namespace Checkers
         private void backgroundWorker1_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
         {
             ActiveForm.Text = "Checkers";
+            UpdateBoard();
+            Gameboard.Enabled = true;
+
             if (Game.CurrentPlayer == 1) { Game.CurrentPlayer = -1; }
             else { Game.CurrentPlayer = 1; }
-            Gameboard.Enabled = true;
-            UpdateBoard();
-
+            
             if (Player1.SelectedItem.ToString() != "Human" && Game.CurrentPlayer == 1) { AiMove(); }
             else if (Player2.SelectedItem.ToString() != "Human" && Game.CurrentPlayer == -1) { AiMove(); }
+            else {  GenerateValidMoves(Game.CurrentPlayer); }
         }
     }
 }

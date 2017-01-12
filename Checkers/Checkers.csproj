@@ -80,6 +80,7 @@
     <None Include="Resources\Empirelogo.jpg" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="BugList.txt" />
     <Content Include="Resources\Jedi.png" />
     <None Include="Resources\SithLogo1.png" />
     <None Include="Resources\Jedi1.png" />

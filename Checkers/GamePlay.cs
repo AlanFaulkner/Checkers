@@ -64,8 +64,14 @@ namespace Checkers
                         else gameboard.Add(0);
                     }
                     else gameboard.Add(0);
+                    //gameboard.Add(0);
                 }
             }
+
+            // testing
+            //gameboard[34] = 2;
+            //gameboard[32] = 2;
+            //gameboard[36] = -2;
 
             Gameboard = gameboard;
         }
