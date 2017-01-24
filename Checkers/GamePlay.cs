@@ -1,17 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Checkers
 {
-    class GamePlay
+    internal class GamePlay
     {
-        List<int> GameBoard = new List<int> { };
-        int player = 1;
-        string Player1 = "AI";
-        string Player2 = "AI";
+        private List<int> GameBoard = new List<int> { };
+        private int player = 1;
+        private string Player1 = "AI";
+        private string Player2 = "AI";
 
         // Public access to game board list.
         public List<int> Gameboard
@@ -37,7 +35,6 @@ namespace Checkers
             get { return Player2; }
             set { Player2 = value; }
         }
-
 
         // ##########################################
         // ## Functions relating to the game board ##
@@ -79,7 +76,8 @@ namespace Checkers
         public void EmptyBoard()
         {
             Gameboard.Clear();
-            for (int i = 0; i < 64; i++) {
+            for (int i = 0; i < 64; i++)
+            {
                 Gameboard.Add(0);
             }
         }
@@ -87,18 +85,17 @@ namespace Checkers
         // ###################################
         // ## Functions related to movement ##
         // ###################################
-        
+
         public void PlayGame()
         {
-            AI GameAI = new AI();
+            MinMax GameAI = new MinMax();
             bool End = false;
 
             SetUpBoard();
             PrintGameBoard2D(Gameboard);
-            
+
             while (!End)
             {
-                
                 if (CurrentPlayer == 1 && Player1 == "Human")
                 {
                     Console.Write("Enter Move: ");
@@ -112,7 +109,6 @@ namespace Checkers
                         CurrentPlayer = -1;
                     }
                 }
-
                 else if (CurrentPlayer == 1 && Player1 == "AI")
                 {
                     // Make move using MinMax
@@ -125,7 +121,6 @@ namespace Checkers
                         CurrentPlayer = -1;
                     }
                 }
-
 
                 if (CurrentPlayer == -1 && Player2 == "Human")
                 {
@@ -140,7 +135,6 @@ namespace Checkers
                         CurrentPlayer = 1;
                     }
                 }
-
                 else if (CurrentPlayer == -1 && Player2 == "AI")
                 {
                     // Make move using MinMax
@@ -153,7 +147,7 @@ namespace Checkers
                         CurrentPlayer = 1;
                     }
                 }
-                }
+            }
         }
 
         // ########################
@@ -164,12 +158,10 @@ namespace Checkers
         // ## Useful functions used for debugging ##
         // #########################################
 
-        
         public void PrintGameBoard2D(List<int> Board) // prints a pretty typed game board to console window.
         {
-            
             Console.WindowHeight = 35; // set number of rows for console window height
-           // Console.Clear();
+                                       // Console.Clear();
 
             for (int i = 0; i < 8; i++)
             {
@@ -190,7 +182,7 @@ namespace Checkers
                 Console.Write("---------------------------------\n");
             }
 
-            Console.WriteLine();  
+            Console.WriteLine();
         }
     }
 }
