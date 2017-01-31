@@ -138,21 +138,17 @@ namespace Checkers
             // calculate number of peices each person has
             for (int i = 0; i < State.Count; i++)
             {
-                if (State[i] == 1) { P1_PeiceCount++; }
-                else if (State[i] == 2) { P1_PeiceCount += 2; }
-                else if (State[i] == -1) { P2_PeiceCount++; }
-                else if (State[i] == -2) { P2_PeiceCount += 2; }
+                if (State[i] > 0) { P1_PeiceCount += State[i]; }
+                else { P2_PeiceCount += Math.Abs(State[i]); }
             }
 
             if (Player == 1)
             {
-                if (P1_PeiceCount == 0 && P2_PeiceCount != 0) { return 25; } // P1 wins
-                else { return P1_PeiceCount - P2_PeiceCount; }
+                return P1_PeiceCount - P2_PeiceCount;
             }
             else
             {
-                if (P2_PeiceCount == 0 && P1_PeiceCount != 0) { return 25; } // P2 wins
-                else { return P2_PeiceCount - P1_PeiceCount; }
+                return P2_PeiceCount - P1_PeiceCount;
             }
         }
 

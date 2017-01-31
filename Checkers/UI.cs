@@ -570,11 +570,10 @@ namespace Checkers
             ActiveForm.Text = "Checkers";
             UpdateBoard();
             Gameboard.Enabled = true;
-            
 
             if (Game.CurrentPlayer == 1) { Game.CurrentPlayer = -1; }
             else { Game.CurrentPlayer = 1; }
-EndGame();
+            EndGame();
             if (Player1.SelectedItem.ToString() != "Human" && Game.CurrentPlayer == 1) { AiMove(); }
             else if (Player2.SelectedItem.ToString() != "Human" && Game.CurrentPlayer == -1) { AiMove(); }
             else { GenerateValidMoves(Game.CurrentPlayer); }

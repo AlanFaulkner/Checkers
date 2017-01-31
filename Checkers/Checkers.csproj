@@ -45,8 +45,17 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="CheckersGamePlay.cs" />
+    <Compile Include="Evolve_NN_Evaluator.cs" />
     <Compile Include="GamePlay.cs" />
+    <Compile Include="Interface_Gene.cs" />
+    <Compile Include="IPlayer.cs" />
     <Compile Include="MinMax.cs" />
+    <Compile Include="MinMaxPlayer.cs" />
+    <Compile Include="Neuron.cs" />
+    <Compile Include="NN_Evaluator.cs" />
+    <Compile Include="NN_MinMax.cs" />
+    <Compile Include="PieceMovment.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Properties\Resources.Designer.cs">
@@ -54,6 +63,7 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
+    <Compile Include="RandomPlayer.cs" />
     <Compile Include="UI.cs">
       <SubType>Form</SubType>
     </Compile>
