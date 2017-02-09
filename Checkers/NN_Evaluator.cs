@@ -5,11 +5,11 @@ namespace Checkers
 {
     internal class NN_Evaluator
     {
-        private int NumberOfWins = 0;
+        private double NumberOfWins = 0;
         public List<List<Neuron>> Network = new List<List<Neuron>> { };
         private List<int> Network_Information = new List<int>() { };
 
-        public int Score
+        public double Score
         {
             get { return NumberOfWins; }
             set { NumberOfWins = value; }
@@ -41,18 +41,18 @@ namespace Checkers
                 {
                     if (i == 1)
                     {
-                        Neuron neuron = new Neuron(Network_Description[0], Rnd.Next(), -0.01, 0.01);
+                        Neuron neuron = new Neuron(Network_Description[0], Rnd.Next(), -0.2, 0.2);
                         Layer.Add(neuron);
                     }
                     else
                     {
-                        Neuron neuron = new Neuron(Network_Description[i - 1], Rnd.Next(), -0.01, 0.01);
+                        Neuron neuron = new Neuron(Network_Description[i - 1], Rnd.Next(), -0.2, 0.2);
                         Layer.Add(neuron);
                     }
                 }
                 Network.Add(Layer);
             }
-            Console.Write("Network created successfully!\n\n");
+            //Console.Write("Network created successfully!\n\n");
             return;
         }
 
@@ -111,6 +111,40 @@ namespace Checkers
                     return;
                 }
             }
+
+            // Build network based on input data
+            for (int i = 1; i < Network_Information.Count; i++)
+            {
+                List<Neuron> Layer = new List<Neuron>() { };
+                for (int j = 0; j < Network_Information[i]; j++)
+                {
+                    if (i == 1)
+                    {
+                        Neuron neuron = new Neuron(Network_Information[0], 0, 0.1, 0.1);
+                        for (int z = 0; z < neuron.Weights.Count; z++)
+                        {
+                            double x;
+                            double.TryParse((line = fs.ReadLine()), out x);
+                            neuron.Weights[z] = x;
+                        }
+                        Layer.Add(neuron);
+                    }
+                    else
+                    {
+                        Neuron neuron = new Neuron(Network_Information[i - 1], 0, 0.1, 0.1);
+                        for (int z = 0; z < neuron.Weights.Count; z++)
+                        {
+                            double x;
+                            double.TryParse((line = fs.ReadLine()), out x);
+                            neuron.Weights[z] = x;
+                        }
+                        Layer.Add(neuron);
+                    }
+                }
+                Network.Add(Layer);
+            }
+
+            fs.Close();
         }
 
         public List<double> Get_Network_Output(List<double> Data)
@@ -172,6 +206,69 @@ namespace Checkers
             }
 
             return Output;
+        }
+
+        // Training Functions
+        public void Back_prop_Stochastic(List<List<double>> Training_Data, List<double> Target_Data, double Training_Rate = 0.1, double Momentum = 0.7, double Target_Error = 1e-10, double Total_Epochs = 1e7)
+        {
+            //Console.Write("\n\nTraining network via online back propagation.\n\n");
+
+            //Console.Write(" Training starting.....\n\n Training Results\n------------------\n\n Epoch       Error\n");
+
+            int Epoch = 0;
+            double RMS_Error = 0.0;
+            do
+            {
+                // Online training - one input is passed through the net and then weights are updated
+                // Data in form of rows
+                RMS_Error = 0.0;
+                for (int q = 0; q < Training_Data.Count; q++)
+                {
+                    List<double> Element = new List<double> { };
+                    List<double> Element_Result = new List<double> { };
+                    Element.AddRange(Training_Data[q]);
+
+                    Get_Network_Output(Element);
+                    for (int j = Network.Count - 1; j >= 0; j--)
+                    {
+                        for (int k = 0; k < Network[j].Count; k++)
+                        {
+                            if (j == Network.Count - 1)
+                            {
+                                Network[j][k].Error = (Target_Data[q] - Network[j][k].Output);
+                                Network[j][k].Error *= Activation_Function(Network[j][k].Output, true);
+                                RMS_Error += Network[j][k].Error * Network[j][k].Error * 0.5;
+                                for (int a = 0; a < Network[j][k].Weight_Update.Count; a++)
+                                {
+                                    Network[j][k].Weight_Update[a] = Network[j][k].Inputs[a] * Network[j][k].Error * Training_Rate;
+                                    Network[j][k].Weights[a] += Network[j][k].Weight_Update[a] + Network[j][k].Weight_Update_Old[a];
+                                    Network[j][k].Weight_Update_Old[a] = Network[j][k].Weight_Update[a] * Momentum;
+                                }
+                            }
+                            else
+                            {
+                                for (int a = 0; a < Network[j + 1].Count; a++)
+                                {
+                                    Network[j][k].Error += Network[j + 1][a].Error * Network[j + 1][a].Weights[a];
+                                }
+                                Network[j][k].Error *= Activation_Function(Network[j][k].Output, true);
+                                for (int a = 0; a < Network[j][k].Weight_Update.Count; a++)
+                                {
+                                    Network[j][k].Weight_Update[a] = Network[j][k].Inputs[a] * Network[j][k].Error * Training_Rate;
+                                    Network[j][k].Weights[a] += Network[j][k].Weight_Update[a] + Network[j][k].Weight_Update_Old[a];
+                                    Network[j][k].Weight_Update_Old[a] = Network[j][k].Weight_Update[a] * Momentum;
+                                }
+                            }
+                        }
+                    }
+                }
+                Epoch++;
+                if (Epoch % 1000 == 0) { Console.Write(Epoch + ":  " + RMS_Error + Environment.NewLine); }
+            } while (Epoch <= Total_Epochs && RMS_Error > Target_Error);
+
+            //Console.Write("\n\nTraining Complete!\n\n");&&
+            Save_Network("Network_Trained.net");
+            //Console.Write("Network saved as 'Network_Trained.net'\n\n");
         }
 
         // Activation Function

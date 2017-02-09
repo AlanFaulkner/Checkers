@@ -47,14 +47,12 @@
   <ItemGroup>
     <Compile Include="CheckersGamePlay.cs" />
     <Compile Include="Evolve_NN_Evaluator.cs" />
-    <Compile Include="GamePlay.cs" />
-    <Compile Include="Interface_Gene.cs" />
     <Compile Include="IPlayer.cs" />
-    <Compile Include="MinMax.cs" />
     <Compile Include="MinMaxPlayer.cs" />
     <Compile Include="Neuron.cs" />
     <Compile Include="NN_Evaluator.cs" />
     <Compile Include="NN_MinMax.cs" />
+    <Compile Include="NN_ReinforcmentLearning.cs" />
     <Compile Include="PieceMovment.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -64,11 +62,13 @@
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
     <Compile Include="RandomPlayer.cs" />
-    <Compile Include="UI.cs">
+    <Compile Include="ReinforcementAlgorithum.cs" />
+    <Compile Include="UIGamePlay.cs" />
+    <Compile Include="User_Interface.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="UI.Designer.cs">
-      <DependentUpon>UI.cs</DependentUpon>
+    <Compile Include="User_Interface.Designer.cs">
+      <DependentUpon>User_Interface.cs</DependentUpon>
     </Compile>
   </ItemGroup>
   <ItemGroup>
@@ -79,8 +79,8 @@
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
-    <EmbeddedResource Include="UI.resx">
-      <DependentUpon>UI.cs</DependentUpon>
+    <EmbeddedResource Include="User_Interface.resx">
+      <DependentUpon>User_Interface.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>

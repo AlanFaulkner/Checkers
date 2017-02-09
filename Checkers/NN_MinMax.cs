@@ -5,7 +5,7 @@ namespace Checkers
 {
     internal class NN_MinMax : IPlayer
     {
-        private int MaxDepth = 4;
+        private int MaxDepth = 1;
 
         private PieceMovment Piece = new PieceMovment();
         private NN_Evaluator NN = new NN_Evaluator();
@@ -42,15 +42,14 @@ namespace Checkers
             if (Depth >= MaxDepth || EndGame(GameBoard) || !MoveList.Any()) { return NN_ScoreState(GameBoard); }
             else
             {
-                double LevelScore = 0;
+                List<double> LevelScore = new List<double> { };
                 for (int i = 0; i < MoveList.Count; i++)
                 {
-                    double Score = MinMaxScore(MoveList[i], -Player, Depth + 1);
-
-                    if (Depth % 2 != 0 && Score > LevelScore) { LevelScore = Score; }
-                    else if (Score < LevelScore) { LevelScore = Score; }
+                    LevelScore.Add(MinMaxScore(MoveList[i], -Player, Depth + 1));
                 }
-                return LevelScore;
+
+                if (Depth % 2 != 0) { return LevelScore.Max(); }
+                else { return LevelScore.Min(); }
             }
         }
 

@@ -8,8 +8,14 @@ namespace Checkers
     {
         private List<int> Gameboard = new List<int> { };
 
-        public List<IPlayer> Player1Type = new List<IPlayer> { new RandomPlayer(), new MinMaxPlayer(), new NN_MinMax() };
-        public List<IPlayer> Player2Type = new List<IPlayer> { new RandomPlayer(), new MinMaxPlayer(), new NN_MinMax() };
+        public List<IPlayer> Player1Type = new List<IPlayer> { new RandomPlayer(), new MinMaxPlayer(), new NN_MinMax(), new NN_ReinforcmentLearning() };
+        public List<IPlayer> Player2Type = new List<IPlayer> { new RandomPlayer(), new MinMaxPlayer(), new NN_MinMax(), new NN_ReinforcmentLearning() };
+        private int MoveTotal = 0;
+
+        public int GetTotalNumberOfMoves
+        {
+            get { return MoveTotal; }
+        }
 
         private int Player1;
 
@@ -115,12 +121,14 @@ namespace Checkers
         public void PlayGame()
         {
             SetupBoard();
-            PrintGameboard();
-            while (!GameOver())
+            // PrintGameboard();
+
+            while (!GameOver() && MoveTotal <= 100)
             {
                 MakeMove();
                 SwitchPlayer();
-                PrintGameboard();
+                //        PrintGameboard();
+                MoveTotal++;
             }
         }
     }

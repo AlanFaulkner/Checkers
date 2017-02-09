@@ -12,8 +12,10 @@ namespace Checkers
 
         // Evolution variables
         private int GenepoolSize = 2;
+
         private int NumberOfGenerations = 10;
         private double Mutationchance = 0.001;
+        private int NumberOfEliteGenes = 5;
         private List<int> GeneDecription = new List<int> { };
 
         // Not really needed as set by constructor
@@ -57,9 +59,7 @@ namespace Checkers
             for (int i = 0; i < GenepoolSize; i++)
             {
                 NN_Evaluator Evaluator = new NN_Evaluator();
-                Evaluator.Create_Network(GeneDecription, RN.Next());
-                //Console.Write("Parent " + i + "\n");
-                //Evaluator.Print_Network_Info();
+                Evaluator.Create_Network(GeneDecription, i);
                 Genepool.Add(Evaluator);
             }
         }
@@ -71,31 +71,46 @@ namespace Checkers
 
             for (int i = 0; i < NumberOfPlayers; i++)
             {
-                for (int j = i + 1; j < NumberOfPlayers; j++)
+                for (int j = 0; j < NumberOfPlayers; j++)
                 {
-                    List<int> Match = new List<int> { i, j };
-                    CompertionMatchUp.Add(Match);
+                    if (i != j)
+                    {
+                        List<int> Match = new List<int> { i, j };
+                        CompertionMatchUp.Add(Match);
+                    }
                 }
             }
         }
 
         // KeyFunction
-        public NN_Evaluator EvolvePlayer()
+        public void EvolvePlayer()
         {
+            Console.Write("\nTraining Player Using Neuroevolution\n");
             for (int i = 0; i < NumberOfGenerations; i++)
             {
+                var time = System.Diagnostics.Stopwatch.StartNew();
+                Console.Write("\nEvaluating Generation " + i);
                 EvaluateGenePool();
+                Console.Write("\nBreeding Next Generation");
                 BreedNextGeneration();
+
+                time.Stop();
+                TimeSpan t = TimeSpan.FromMilliseconds(time.ElapsedMilliseconds);
+                string answer = string.Format("{0:D2}h:{1:D2}m:{2:D2}s:{3:D3}ms",
+                                        t.Hours,
+                                        t.Minutes,
+                                        t.Seconds,
+                                        t.Milliseconds);
+                Console.Write("\nTime to complete one evolutionary cycle " + answer + "\n");
                 if (i % 10 == 0) { SaveGenePool(); }
             }
             EvaluateGenePool();
+            Console.Write("\nTraining Complete!");
             SaveGenePool();
-
-            return Genepool[0];
         }
 
         // Determin Genes success rate
-        public void EvaluateGenePool()
+        private void EvaluateGenePool()
         {
             for (int i = 0; i < CompertionMatchUp.Count; i++)
             {
@@ -105,7 +120,7 @@ namespace Checkers
             RankGenepool();
         }
 
-        public void PlayGame(NN_Evaluator Player1, NN_Evaluator Player2)
+        private void PlayGame(NN_Evaluator Player1, NN_Evaluator Player2)
         {
             CheckersGamePlay Game = new CheckersGamePlay();
             Game.SetPlayer1 = 2;
@@ -117,18 +132,26 @@ namespace Checkers
             NN2.SetNN = Player2;
 
             Game.PlayGame();
-            if (Game.GetCurrentPlayer == 1) { Player1.Score+=1; }
-            else { Player2.Score+=1; }
+            if (Game.GetTotalNumberOfMoves >= 100) { Player1.Score += -1; Player2.Score += -1; }
+            else if (Game.GetCurrentPlayer == 1) { Player1.Score += 1; Player2.Score += -2; }
+            else { Player2.Score += 1; Player1.Score += -2; }
         }
 
         private void RankGenepool()
         {
-            List<NN_Evaluator> Ranked = Genepool.OrderByDescending(a => a.Score).ToList();
-            int Sum = 0;
+            Genepool = Genepool.OrderByDescending(a => a.Score).ToList();
+            double Max = 2 * -CompertionMatchUp.Count, Min = CompertionMatchUp.Count, Sum = 0;
 
-            // Normalise Score
+            // rescale Score between 0 and 1
             for (int i = 0; i < GenepoolSize; i++)
             {
+                if (Max < Genepool[i].Score) { Max = Genepool[i].Score; }
+                if (Min > Genepool[i].Score) { Min = Genepool[i].Score; }
+            }
+
+            for (int i = 0; i < GenepoolSize; i++)
+            {
+                Genepool[i].Score = (Genepool[i].Score - Min) / (Max - Min);
                 Sum += Genepool[i].Score;
             }
 
@@ -143,10 +166,10 @@ namespace Checkers
         {
             List<NN_Evaluator> NewGeneration = new List<NN_Evaluator> { };
 
-            RankGenepool();
             for (int i = 0; i < GenepoolSize; i++)
             {
-                NewGeneration.Add(Crossbreed_Random(SelectParent(), SelectParent()));
+                if (i < NumberOfEliteGenes) { NewGeneration.Add(Genepool[i]); }
+                else { NewGeneration.Add(Crossbreed_Random(SelectParent(), SelectParent())); }
             }
 
             Genepool.Clear();
@@ -190,7 +213,7 @@ namespace Checkers
                     }
                 }
             }
-            Child.Print_Network_Info();
+
             return Child;
         }
 
@@ -251,7 +274,14 @@ namespace Checkers
 
         public void LoadGenePool()
         {
-            throw new NotImplementedException();
+            Genepool.Clear();
+            // there is no error handeling if file is not present - realistically this is just a hacky way to continue train on some data fro previous run.
+           for (int i = 0; i < GenepoolSize; i++)
+            {
+                NN_Evaluator NN = new NN_Evaluator();
+                NN.Load_Network("Gene" + i + ".txt");
+                Genepool.Add(NN);
+            }
         }
     }
 }

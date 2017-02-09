@@ -106,12 +106,15 @@
             this.Settings = new System.Windows.Forms.TabControl();
             this.Players = new System.Windows.Forms.TabPage();
             this.GameSettings = new System.Windows.Forms.TabPage();
-            this.labemathces = new System.Windows.Forms.Label();
-            this.Matches = new System.Windows.Forms.ComboBox();
-            this.labelJumping = new System.Windows.Forms.Label();
             this.Jumping = new System.Windows.Forms.ComboBox();
+            this.labelJumping = new System.Windows.Forms.Label();
+            this.Matches = new System.Windows.Forms.ComboBox();
+            this.labemathces = new System.Windows.Forms.Label();
             this.pictureBox2 = new System.Windows.Forms.PictureBox();
             this.pictureBox3 = new System.Windows.Forms.PictureBox();
+            this.tabPage1 = new System.Windows.Forms.TabPage();
+            this.label5 = new System.Windows.Forms.Label();
+            this.textBox1 = new System.Windows.Forms.TextBox();
             this.Gameboard.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.Settings.SuspendLayout();
@@ -119,6 +122,7 @@
             this.GameSettings.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox2)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox3)).BeginInit();
+            this.tabPage1.SuspendLayout();
             this.SuspendLayout();
             // 
             // button1
@@ -1222,10 +1226,11 @@
             // 
             this.Settings.Controls.Add(this.Players);
             this.Settings.Controls.Add(this.GameSettings);
-            this.Settings.Location = new System.Drawing.Point(364, 144);
+            this.Settings.Controls.Add(this.tabPage1);
+            this.Settings.Location = new System.Drawing.Point(355, 144);
             this.Settings.Name = "Settings";
             this.Settings.SelectedIndex = 0;
-            this.Settings.Size = new System.Drawing.Size(174, 133);
+            this.Settings.Size = new System.Drawing.Size(174, 145);
             this.Settings.TabIndex = 74;
             // 
             // Players
@@ -1237,7 +1242,7 @@
             this.Players.Location = new System.Drawing.Point(4, 22);
             this.Players.Name = "Players";
             this.Players.Padding = new System.Windows.Forms.Padding(3);
-            this.Players.Size = new System.Drawing.Size(166, 107);
+            this.Players.Size = new System.Drawing.Size(166, 119);
             this.Players.TabIndex = 0;
             this.Players.Text = "Players";
             this.Players.UseVisualStyleBackColor = true;
@@ -1252,18 +1257,29 @@
             this.GameSettings.Location = new System.Drawing.Point(4, 22);
             this.GameSettings.Name = "GameSettings";
             this.GameSettings.Padding = new System.Windows.Forms.Padding(3);
-            this.GameSettings.Size = new System.Drawing.Size(166, 107);
+            this.GameSettings.Size = new System.Drawing.Size(166, 119);
             this.GameSettings.TabIndex = 1;
             this.GameSettings.Text = "Settings";
             // 
-            // labemathces
+            // Jumping
             // 
-            this.labemathces.AutoSize = true;
-            this.labemathces.Location = new System.Drawing.Point(6, 19);
-            this.labemathces.Name = "labemathces";
-            this.labemathces.Size = new System.Drawing.Size(90, 13);
-            this.labemathces.TabIndex = 0;
-            this.labemathces.Text = "Number of games";
+            this.Jumping.FormattingEnabled = true;
+            this.Jumping.Items.AddRange(new object[] {
+            "True",
+            "False"});
+            this.Jumping.Location = new System.Drawing.Point(116, 64);
+            this.Jumping.Name = "Jumping";
+            this.Jumping.Size = new System.Drawing.Size(44, 21);
+            this.Jumping.TabIndex = 3;
+            // 
+            // labelJumping
+            // 
+            this.labelJumping.AutoSize = true;
+            this.labelJumping.Location = new System.Drawing.Point(3, 68);
+            this.labelJumping.Name = "labelJumping";
+            this.labelJumping.Size = new System.Drawing.Size(100, 13);
+            this.labelJumping.TabIndex = 2;
+            this.labelJumping.Text = "Enforce Jummping?";
             // 
             // Matches
             // 
@@ -1278,25 +1294,14 @@
             this.Matches.Size = new System.Drawing.Size(58, 21);
             this.Matches.TabIndex = 1;
             // 
-            // labelJumping
+            // labemathces
             // 
-            this.labelJumping.AutoSize = true;
-            this.labelJumping.Location = new System.Drawing.Point(3, 68);
-            this.labelJumping.Name = "labelJumping";
-            this.labelJumping.Size = new System.Drawing.Size(100, 13);
-            this.labelJumping.TabIndex = 2;
-            this.labelJumping.Text = "Enforce Jummping?";
-            // 
-            // Jumping
-            // 
-            this.Jumping.FormattingEnabled = true;
-            this.Jumping.Items.AddRange(new object[] {
-            "True",
-            "False"});
-            this.Jumping.Location = new System.Drawing.Point(116, 64);
-            this.Jumping.Name = "Jumping";
-            this.Jumping.Size = new System.Drawing.Size(44, 21);
-            this.Jumping.TabIndex = 3;
+            this.labemathces.AutoSize = true;
+            this.labemathces.Location = new System.Drawing.Point(6, 19);
+            this.labemathces.Name = "labemathces";
+            this.labemathces.Size = new System.Drawing.Size(90, 13);
+            this.labemathces.TabIndex = 0;
+            this.labemathces.Text = "Number of games";
             // 
             // pictureBox2
             // 
@@ -1317,6 +1322,34 @@
             this.pictureBox3.Size = new System.Drawing.Size(23, 24);
             this.pictureBox3.TabIndex = 76;
             this.pictureBox3.TabStop = false;
+            // 
+            // tabPage1
+            // 
+            this.tabPage1.Controls.Add(this.textBox1);
+            this.tabPage1.Controls.Add(this.label5);
+            this.tabPage1.Location = new System.Drawing.Point(4, 22);
+            this.tabPage1.Name = "tabPage1";
+            this.tabPage1.Padding = new System.Windows.Forms.Padding(3);
+            this.tabPage1.Size = new System.Drawing.Size(166, 119);
+            this.tabPage1.TabIndex = 2;
+            this.tabPage1.Text = "NN_Settings";
+            this.tabPage1.UseVisualStyleBackColor = true;
+            // 
+            // label5
+            // 
+            this.label5.AutoSize = true;
+            this.label5.Location = new System.Drawing.Point(3, 13);
+            this.label5.Name = "label5";
+            this.label5.Size = new System.Drawing.Size(49, 13);
+            this.label5.TabIndex = 0;
+            this.label5.Text = "Filename";
+            // 
+            // textBox1
+            // 
+            this.textBox1.Location = new System.Drawing.Point(53, 10);
+            this.textBox1.Name = "textBox1";
+            this.textBox1.Size = new System.Drawing.Size(100, 20);
+            this.textBox1.TabIndex = 1;
             // 
             // UI
             // 
@@ -1345,6 +1378,8 @@
             this.GameSettings.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox2)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox3)).EndInit();
+            this.tabPage1.ResumeLayout(false);
+            this.tabPage1.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -1436,5 +1471,8 @@
         private System.Windows.Forms.Label labemathces;
         private System.Windows.Forms.PictureBox pictureBox2;
         private System.Windows.Forms.PictureBox pictureBox3;
+        private System.Windows.Forms.TabPage tabPage1;
+        private System.Windows.Forms.TextBox textBox1;
+        private System.Windows.Forms.Label label5;
     }
 }
