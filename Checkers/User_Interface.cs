@@ -39,6 +39,7 @@ namespace Checkers
             Player2Select.SelectedIndex = 0;
             Player2Select.SelectedIndexChanged += new System.EventHandler(EnableNNSettings);
             NumberOfGames.SelectedIndex = 0;
+            Player1Filename.Text = "NeuralNetPlayer.net";
         }
 
         // Design Elements
@@ -393,7 +394,7 @@ namespace Checkers
 
         private void AI_Move()
         {
-            User_Interface.ActiveForm.Text = "Thinking...";
+            //User_Interface.ActiveForm.Text = "Thinking...";
             MakeAI_Move.RunWorkerAsync();  
         }
 
@@ -406,7 +407,7 @@ namespace Checkers
         private void MakeAI_Move_Complete(object sender, RunWorkerCompletedEventArgs e)
         {
             UpdateBoard();
-            User_Interface.ActiveForm.Text = "Checkers";
+            //User_Interface.ActiveForm.Text = "Checkers";
             if (Game.GameOver()) { EndGame(); }
             else { ChangePlayers(); }
         }

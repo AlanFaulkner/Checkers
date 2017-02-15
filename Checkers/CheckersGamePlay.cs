@@ -52,6 +52,8 @@ namespace Checkers
             };
 
             Gameboard = gameboard;
+            CurrentPlayer = 0;
+            MoveTotal = 0;
         }
 
         private void SwitchPlayer()
@@ -70,7 +72,7 @@ namespace Checkers
             }
 
             if (Player1 == 0 || Player2 == 0) { return true; }
-            else if (NoVaildMoves()) { return true; }
+            else if (NoVaildMoves()) { SwitchPlayer(); return true; }
             else { return false; }
         }
 
@@ -127,7 +129,7 @@ namespace Checkers
             {
                 MakeMove();
                 SwitchPlayer();
-                //        PrintGameboard();
+                // PrintGameboard();
                 MoveTotal++;
             }
         }

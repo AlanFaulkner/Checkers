@@ -1,6 +1,16 @@
-﻿current issues
+﻿Known bugs.
 
-1. AI seems more stupid than it should be
-2. is with deseling while jumping
-3. 
-4. 
+Only sigmoid function seems to work with the backpropagation algorithm. Attempts to use TanH, sigmoidal, and ReLu result in NaN error for the weights.
+
+Changing the depth in minmax player doesn’t seem to drastically improve AI.
+MinMax player is somewhat defeatist.
+
+Evolve_NN_Evaluator is slow. Paralysation of main algorithm may help to speed this up.
+
+Neural network architecture is static and fully feed forward in nature. Evolving both connectivity and number of neurons/layers may improve overall performance of network. This will cause a 
+massive increase in overall speed however.
+
+Background worker complete function is unable to update the title bar text of windows form. While this originally worked fine it suddenly reports not initialised error despite no changes to 
+code. Current offending lines are commented out.
+
+General input checking with file names and existance of file has not been included. 

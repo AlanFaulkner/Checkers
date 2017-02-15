@@ -62,7 +62,6 @@
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
     <Compile Include="RandomPlayer.cs" />
-    <Compile Include="ReinforcementAlgorithum.cs" />
     <Compile Include="UIGamePlay.cs" />
     <Compile Include="User_Interface.cs">
       <SubType>Form</SubType>
@@ -91,6 +90,7 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="BugList.txt" />
+    <Content Include="ReadME.txt" />
     <Content Include="Resources\Jedi.png" />
     <None Include="Resources\SithLogo1.png" />
     <None Include="Resources\Jedi1.png" />

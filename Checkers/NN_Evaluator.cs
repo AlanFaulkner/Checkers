@@ -223,12 +223,8 @@ namespace Checkers
                 // Data in form of rows
                 RMS_Error = 0.0;
                 for (int q = 0; q < Training_Data.Count; q++)
-                {
-                    List<double> Element = new List<double> { };
-                    List<double> Element_Result = new List<double> { };
-                    Element.AddRange(Training_Data[q]);
-
-                    Get_Network_Output(Element);
+                {                    
+                    Get_Network_Output(Training_Data[q]);
                     for (int j = Network.Count - 1; j >= 0; j--)
                     {
                         for (int k = 0; k < Network[j].Count; k++)
@@ -274,8 +270,14 @@ namespace Checkers
         // Activation Function
         private double Activation_Function(double X, bool DyDx)
         {
-            if (DyDx == true) { return 1 - (Math.Tan(X) * Math.Tan(X)); }
-            else { return Math.Tanh(X); }
+            //if (DyDx == true) { return 1 - (Math.Tan(X) * Math.Tan(X)); }
+            //else { return Math.Tanh(X); }
+            //if (DyDx == true && X > 0) { return 1; }
+            //else if (DyDx == true && X < 0) { return 0.01; }
+            //else if (DyDx == false && X > 0) { return X; }
+            //else { return 0.01 * X; }
+            if (DyDx == true) { return X * (1 - X); }
+            else return 1 / (1 + Math.Exp(-X));
         }
 
         // Diagnostic functions

@@ -88,21 +88,22 @@ namespace Checkers
             Console.Write("\nTraining Player Using Neuroevolution\n");
             for (int i = 0; i < NumberOfGenerations; i++)
             {
-                var time = System.Diagnostics.Stopwatch.StartNew();
-                Console.Write("\nEvaluating Generation " + i);
+                //var time = System.Diagnostics.Stopwatch.StartNew();
+                Console.Write("\nEvaluating Generation " + (i+1));
                 EvaluateGenePool();
-                Console.Write("\nBreeding Next Generation");
+                // Console.Write("\nBreeding Next Generation");
                 BreedNextGeneration();
 
-                time.Stop();
-                TimeSpan t = TimeSpan.FromMilliseconds(time.ElapsedMilliseconds);
-                string answer = string.Format("{0:D2}h:{1:D2}m:{2:D2}s:{3:D3}ms",
-                                        t.Hours,
-                                        t.Minutes,
-                                        t.Seconds,
-                                        t.Milliseconds);
-                Console.Write("\nTime to complete one evolutionary cycle " + answer + "\n");
+                //time.Stop();
+                //TimeSpan t = TimeSpan.FromMilliseconds(time.ElapsedMilliseconds);
+                //string answer = string.Format("{0:D2}h:{1:D2}m:{2:D2}s:{3:D3}ms",
+                //                        t.Hours,
+                //                        t.Minutes,
+                //                        t.Seconds,
+                //                        t.Milliseconds);
+                //Console.Write("\nTime to complete one evolutionary cycle " + answer + "\n");
                 if (i % 10 == 0) { SaveGenePool(); }
+                Console.SetCursorPosition(0, Console.CursorTop - 1);
             }
             EvaluateGenePool();
             Console.Write("\nTraining Complete!");
@@ -111,7 +112,7 @@ namespace Checkers
 
         // Determin Genes success rate
         private void EvaluateGenePool()
-        {
+        {            
             for (int i = 0; i < CompertionMatchUp.Count; i++)
             {
                 PlayGame(Genepool[CompertionMatchUp[i][0]], Genepool[CompertionMatchUp[i][1]]);
@@ -269,7 +270,7 @@ namespace Checkers
             {
                 Genepool[i].Save_Network("Gene" + i + ".txt");
             }
-            Console.Write("\nGenepool data saved.\n");
+            //Console.Write("\nGenepool data saved.\n");
         }
 
         public void LoadGenePool()

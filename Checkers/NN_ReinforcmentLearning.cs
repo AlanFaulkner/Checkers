@@ -46,12 +46,9 @@ namespace Checkers
             List<double> MoveScore = new List<double> { };
             for (int i = 0; i < PossibleMoves.Count; i++)
             {
-                List<double> temp = NN.Get_Network_Output(PossibleMoves[i]);
+                List<double> temp = NN.Get_Network_Output(Remove_InaccessableBoardLocations(PossibleMoves[i]));
                 MoveScore.Add(temp[0]);
             }
-
-           // MoveScore = RescaleList(MoveScore);
-            MoveScore = NormaliseData(MoveScore);
 
             if (Training == false)
             {
@@ -64,7 +61,7 @@ namespace Checkers
             }
             else
             {
-                int MoveID = SelectMove(MoveScore);
+                int MoveID = SelectMove_ByDistrubution(MoveScore);
                 OutputMove.Add(MoveScore[MoveID]);
                 List<int> SelectedMove = PossibleMoves[MoveID].ConvertAll(Convert.ToInt32);
                 return SelectedMove;
@@ -84,10 +81,24 @@ namespace Checkers
             }            
 
             // Train Networks
-            NN.Back_prop_Stochastic(InputMove, OutputMove, 0.1, 0.7, 1e-10, 1);
+            NN.Back_prop_Stochastic(InputMove, OutputMove, 0.1, 0.7, 1e-10, 10);
             NN.Save_Network(Filename);
             InputMove.Clear();
             OutputMove.Clear();
+        }
+
+        public List<double> Remove_InaccessableBoardLocations(List<double> Data)
+        {
+            // hacky to convert game board description from 64 total squares to 32 playable squares - may need to completely convert gameboard description to 32 squars throughout.
+            List<double> Result = new List<double> { };
+            for (int i = 0; i < Data.Count; i++)
+            {
+                if(((i / 8)%2 ==0 && i%2==0)||((i/8)%2!=0 && i % 2 != 0))
+                {
+                    Result.Add(Data[i]);
+                }
+            }
+            return Result;
         }
 
         private List<double> RescaleList(List<double> Data)
@@ -109,22 +120,32 @@ namespace Checkers
             return Data;
         }
 
-        private int SelectMove(List<double> MoveScore)
+        private int SelectMove_ByDistrubution(List<double> MoveScore)
         {
+            List<double> Score = new List<double> { };
+            Score.AddRange(MoveScore);
+            Score = NormaliseData(Score);
+
             double cumulatedProbability = RN.NextDouble();
 
             for (int i = 0; i < MoveScore.Count; i++)
             {
-                if ((cumulatedProbability -= MoveScore[i]) <= 0)
+                if ((cumulatedProbability -=Score[i]) <= 0)
                     return i;
             }
 
-            throw new Exception("Out of range. Is Move Data rescaled and normalised?");
+            throw new Exception("Out of range. Is Move Data normalised?");
+        }
+
+        private int SelectMove_BestPossible(List<double> Data)
+        {
+            return Data.IndexOf(Data.Max());
         }
 
         private void SaveInitalGamestate(List<int> Gameboard)
         {
             List<double> Input = Gameboard.Select<int, double>(i => i).ToList();
+            Input = Remove_InaccessableBoardLocations(Input);
             InputMove.Add(Input);
         }
 
@@ -149,11 +170,11 @@ namespace Checkers
                 TrainingOutputs[i] = Activation_Function(TrainingOutputs[i], true);
             }
 
-            TrainingOutputs[TrainingOutputs.Count - 1] = TrainingOutputs[TrainingOutputs.Count - 1] + Result;
+            TrainingOutputs[TrainingOutputs.Count - 1] += Result;
 
             for (int i = TrainingOutputs.Count - 2; i >= 0; i--)
             {
-                TrainingOutputs[i] = TrainingOutputs[i] + (DiscountRate * TrainingOutputs[i + 1]);
+                TrainingOutputs[i] = (TrainingOutputs[i] + (DiscountRate * TrainingOutputs[i + 1]));
             }
 
             for (int i = 0; i < TrainingOutputs.Count; i++)
@@ -166,8 +187,17 @@ namespace Checkers
 
         private double Activation_Function(double X, bool DyDx)
         {
-            if (DyDx == true) { return 1 - (Math.Tan(X) * Math.Tan(X)); }
-            else { return Math.Tanh(X); }
+            // Only seems to work is a sigmoid function is used tanH and rectulinear functions all seems to result in infite weight values for some reason.
+            //if (DyDx == true) { return 1 - (Math.Tan(X) * Math.Tan(X)); }
+            //else { return Math.Tanh(X); }
+
+            //if (DyDx==true && X>0) { return 1; }
+            //else if (DyDx==true && X<0) { return 0.01; }
+            //else if (DyDx == false && X > 0) { return X; }
+            //else { return 0.01*X; }
+
+            if (DyDx == true) { return X * (1 - X); }
+            else return 1 / (1 + Math.Exp(-X));
         }
     }
 }

@@ -71,8 +71,22 @@ namespace Checkers
         private double NN_ScoreState(List<int> Gameboard)
         {
             List<double> Input = Gameboard.Select<int, double>(i => i).ToList();
-            List<double> Output = NN.Get_Network_Output(Input);
+            List<double> Output = NN.Get_Network_Output(Remove_InaccessableBoardLocations(Input));
             return Output[0];
+        }
+
+        public List<double> Remove_InaccessableBoardLocations(List<double> Data)
+        {
+            // hacky to convert game board description from 64 total squares to 32 playable squares - may need to completely convert gameboard description to 32 squars throughout.
+            List<double> Result = new List<double> { };
+            for (int i = 0; i < Data.Count; i++)
+            {
+                if (((i / 8) % 2 == 0 && i % 2 == 0) || ((i / 8) % 2 != 0 && i % 2 != 0))
+                {
+                    Result.Add(Data[i]);
+                }
+            }
+            return Result;
         }
     }
 }
