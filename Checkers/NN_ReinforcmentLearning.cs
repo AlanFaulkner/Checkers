@@ -68,17 +68,16 @@ namespace Checkers
             }
         }
 
-        public void Train_Neural_Network(string Result,string Filename)
-        {            
+        public void Train_Neural_Network(string Result, string Filename)
+        {
             if (Result == "Win")
             {
                 OutputMove = ScoreTrainingOutputs(OutputMove, 1);
             }
-
-            else 
+            else
             {
                 OutputMove = ScoreTrainingOutputs(OutputMove, -2);
-            }            
+            }
 
             // Train Networks
             NN.Back_prop_Stochastic(InputMove, OutputMove, 0.1, 0.7, 1e-10, 10);
@@ -93,7 +92,7 @@ namespace Checkers
             List<double> Result = new List<double> { };
             for (int i = 0; i < Data.Count; i++)
             {
-                if(((i / 8)%2 ==0 && i%2==0)||((i/8)%2!=0 && i % 2 != 0))
+                if (((i / 8) % 2 == 0 && i % 2 == 0) || ((i / 8) % 2 != 0 && i % 2 != 0))
                 {
                     Result.Add(Data[i]);
                 }
@@ -130,7 +129,7 @@ namespace Checkers
 
             for (int i = 0; i < MoveScore.Count; i++)
             {
-                if ((cumulatedProbability -=Score[i]) <= 0)
+                if ((cumulatedProbability -= Score[i]) <= 0)
                     return i;
             }
 

@@ -223,7 +223,7 @@ namespace Checkers
                 // Data in form of rows
                 RMS_Error = 0.0;
                 for (int q = 0; q < Training_Data.Count; q++)
-                {                    
+                {
                     Get_Network_Output(Training_Data[q]);
                     for (int j = Network.Count - 1; j >= 0; j--)
                     {

@@ -89,7 +89,7 @@ namespace Checkers
             for (int i = 0; i < NumberOfGenerations; i++)
             {
                 //var time = System.Diagnostics.Stopwatch.StartNew();
-                Console.Write("\nEvaluating Generation " + (i+1));
+                Console.Write("\nEvaluating Generation " + (i + 1));
                 EvaluateGenePool();
                 // Console.Write("\nBreeding Next Generation");
                 BreedNextGeneration();
@@ -112,7 +112,7 @@ namespace Checkers
 
         // Determin Genes success rate
         private void EvaluateGenePool()
-        {            
+        {
             for (int i = 0; i < CompertionMatchUp.Count; i++)
             {
                 PlayGame(Genepool[CompertionMatchUp[i][0]], Genepool[CompertionMatchUp[i][1]]);
@@ -277,7 +277,7 @@ namespace Checkers
         {
             Genepool.Clear();
             // there is no error handeling if file is not present - realistically this is just a hacky way to continue train on some data fro previous run.
-           for (int i = 0; i < GenepoolSize; i++)
+            for (int i = 0; i < GenepoolSize; i++)
             {
                 NN_Evaluator NN = new NN_Evaluator();
                 NN.Load_Network("Gene" + i + ".txt");

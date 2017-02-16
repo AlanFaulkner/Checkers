@@ -1,21 +1,19 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Threading;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace Checkers
 {
     internal class Program
     {
-        public static void EvolveNetworks(int NumberOfGenes, List<int> GeneDescription,int NumberOfGenerations,double MutationRate)
+        public static void EvolveNetworks(int NumberOfGenes, List<int> GeneDescription, int NumberOfGenerations, double MutationRate)
         {
             // ############################################
             // ## Evolve Neural network to play checkers ##
             // ############################################
 
             Console.Write("Evolving " + NumberOfGenes + " neural networks to play checkers using the follwoing settings:\n\nNetwork Description: ");
-            for(int i = 0; i < GeneDescription.Count; i++)
+            for (int i = 0; i < GeneDescription.Count; i++)
             {
                 Console.Write(GeneDescription[i] + " ");
             }
@@ -36,7 +34,7 @@ namespace Checkers
                                     t.Milliseconds);
 
             Console.Write("\nEvolution complete\n\nTotal time taken: " + answer);
-            Console.WriteLine("\nSaving the current best neueral network player as: NeuralNetPlayer.net");
+            Console.WriteLine("\nSaving the current best neueral network player as: NeuralNetPlayer.net\n\n");
             evolve.GenePool[0].Save_Network("NeuralNetPlayer.net");
         }
 
@@ -45,7 +43,7 @@ namespace Checkers
             // ##############################################################################
             // ## Improve best neural network againsts itself using reinforcement learning ##
             // ##############################################################################
-            
+
             CheckersGamePlay Game = new CheckersGamePlay();
             Game.SetPlayer1 = 3;
             Game.SetPlayer2 = 3;
@@ -97,24 +95,64 @@ namespace Checkers
                                     t.Minutes,
                                     t.Seconds,
                                     t.Milliseconds);
-            Console.WriteLine("\nTotal time taken = " + answer);
+            Console.WriteLine("\nTotal time taken = " + answer + "\n\n");
         }
 
         private static void Main(string[] args)
         {
-            List<int> GeneDescription = new List<int> { 32, 40, 10, 1 };
+            // ###############################################
+            // ##                                           ##
+            // ## Checkers Ver 1.0 by Alan Faulkner 16/2/17 ## 
+            // ##                                           ##
+            // ###############################################
 
-            // Generate a successful network
-            EvolveNetworks(40, GeneDescription, 1000, 0.05);
+            // ###################
+            // ## General notes ##
+            // ###################
 
-            // Improve Network
-            TrainNetworksUsingReinforcementLearning("NeuralNetPlayer.net", "NeuralNetPlayer.net", 1000000);
+            /*
+             * Neural netwroks are stored a plain text files wiht the .net extension and located in the \bin file. (I'm using Visual Studio and Git so my full path is C:\Users\Alan\Source\Repos\Checkers\Checkers\bin)
+             * 
+             * Training networks takes time (the code could probably be optimized tbh) the example i've included in the repository, NeuralNetPlayer.net, describes a network with 32 inputs two hidden layers of sizes 40 and 10
+             * respectivly and one output layer sized 1. training on my descktop (Intel Core I3 (550 clocked to 3.84 GHz), 4 GB DDR3 ram, running Windows 10) of this network over 1000 generations and a mutaion rate of 5% and
+             * a minmax search depth(set in NN_MinMix class) took just over 8 hours to complete.
+             * 
+             * The values for the hidden layer were chosen at random and changes may improve player.
+             * 
+             * The defualt search depth used for the minmax AI are as follows Easy: 4, Medium: 6, Hard: 8.
+             * 
+             * The option to train the neural network by playing against it yourself has been included in the UI. Please note while learning the network is set to select moves based on their score distrubution, this mean that
+             * the network will not always pick what it thinks is the best move for a given sitution inorder to experience a greater range of possible moves that may potnetially lead to a better score in the long term hence
+             * hence improving the network or more likly it will play suboptimally (compared to its current best). Inorder to determin if the network has infact improved its recomened that when playing against it the 'enable
+             * training' checkbox is left unchecked. in this mode the network will always choose what it thinks is the best move for the current situation.
+             * 
+             */
+
+            // ###################################
+            // ## Generate a successful network ##
+            // ###################################
+
+            // Uncomment the following two lines to train a new set of neural networks from scratch using the Genetic evoluation algorithm. 
+
+            // List<int> GeneDescription = new List<int> { 32, 40, 10, 1 }; // This is the network description. Each number represents one layer. The first layer must have size of 32 and last layer must be size 1. At least three layers are needed.
+            // EvolveNetworks(40, GeneDescription, 500, 0.05); // Inputs are: Number of genes, GeneDescription, number of generations, mutation rate - This should be small probably < 10 %
+
+            // #####################
+            // ## Improve Network ##
+            // #####################
+
+            // Uncomment the following line to improve one or two neural networks using reinforcement learning. Note curently player one always goes first. Only sutiable for playing networks against each other, minmax players will be added to train against at a later date!
+
+            // TrainNetworksUsingReinforcementLearning("NeuralNetPlayer.net", "NeuralNetPlayer.net", 1000000); // Inputs are: Player1 filename, Player2 filename, Number of games to play
+
+            // ############################################################################
+            // ## Run User Interface to play checkers against either human or AI players ##
+            // ############################################################################
 
             // UI application to phyically play game and test neural network.
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
             Application.Run(new User_Interface());
-
         }
     }
 }

@@ -1,11 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Data;
 using System.Drawing;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace Checkers
@@ -22,6 +19,7 @@ namespace Checkers
 
         // Gameplay
         private int CurrentGame = 0;
+
         private int MaxNumberOfGames = 1;
         private int Player1 = 0;
         private int Player2 = 0;
@@ -176,7 +174,7 @@ namespace Checkers
             this.Controls.Add(CurrentPlayer);
             this.Controls.Add(CurrentPlayerTitle);
         }
-        
+
         private void EnableNNSettings(object sender, EventArgs e)
         {
             var box = (ComboBox)sender;
@@ -311,8 +309,7 @@ namespace Checkers
             else pic.Image = global::Checkers.Properties.Resources.rebbellogo;
         }
 
-
-        // General game play functions 
+        // General game play functions
 
         private void MakeMove(int SelectedMove)
         {
@@ -348,18 +345,16 @@ namespace Checkers
         {
             CurrentGame++;
 
-            if (((Game.CurrentPlayer == 1 && Player1==4)||(Game.CurrentPlayer == -1 && Player2 == 4)) && Player1Training.Checked == true)
+            if (((Game.CurrentPlayer == 1 && Player1 == 4) || (Game.CurrentPlayer == -1 && Player2 == 4)) && Player1Training.Checked == true)
             {
                 //User_Interface.ActiveForm.Text = "Learning.... (Updating Neural Net)";
                 Train_Neural_Network.RunWorkerAsync("Win");
-
             }
             else if (((Game.CurrentPlayer == 1 && Player1 != 4) || (Game.CurrentPlayer == -1 && Player2 != 4)) && Player1Training.Checked == true)
             {
-               // User_Interface.ActiveForm.Text = "Learning.... (Updating Neural Net)";
+                // User_Interface.ActiveForm.Text = "Learning.... (Updating Neural Net)";
                 Train_Neural_Network.RunWorkerAsync("Loose");
             }
-
             else
             {
                 EndGameTidyUp();
@@ -368,26 +363,26 @@ namespace Checkers
 
         private void EndGameTidyUp()
         {
-                if (Game.CurrentPlayer == 1) { P1_Score++; }
-                else { P2_Score++; }
+            if (Game.CurrentPlayer == 1) { P1_Score++; }
+            else { P2_Score++; }
 
-                UpdateScore();
+            UpdateScore();
 
-                if (CurrentGame < MaxNumberOfGames)
-                {
-                    Game.InitaliseGame();
-                    UpdateBoard();
-                    HighlightAllPossibleMoves();
-                }
-                else
-                {
-                    DisableGameboardSquares();
-                    int Player = 0;
-                    if (Game.CurrentPlayer == 1) { Player = 1; }
-                    else { Player = 2; }
-                    MessageBox.Show("Congratulations Player " + Player + " you have won!");
-                    Settings.Enabled = true;
-                }
+            if (CurrentGame < MaxNumberOfGames)
+            {
+                Game.InitaliseGame();
+                UpdateBoard();
+                HighlightAllPossibleMoves();
+            }
+            else
+            {
+                DisableGameboardSquares();
+                int Player = 0;
+                if (Game.CurrentPlayer == 1) { Player = 1; }
+                else { Player = 2; }
+                MessageBox.Show("Congratulations Player " + Player + " you have won!");
+                Settings.Enabled = true;
+            }
         }
 
         // AI Functions
@@ -395,13 +390,13 @@ namespace Checkers
         private void AI_Move()
         {
             //User_Interface.ActiveForm.Text = "Thinking...";
-            MakeAI_Move.RunWorkerAsync();  
+            MakeAI_Move.RunWorkerAsync();
         }
 
         private void MakeAI_Move_DoWork(object sender, DoWorkEventArgs e)
         {
-            if (Game.CurrentPlayer == 1) { Game.AIMove(Player1-1); }
-            else { Game.AIMove(Player2-1); }
+            if (Game.CurrentPlayer == 1) { Game.AIMove(Player1 - 1); }
+            else { Game.AIMove(Player2 - 1); }
         }
 
         private void MakeAI_Move_Complete(object sender, RunWorkerCompletedEventArgs e)
@@ -419,12 +414,10 @@ namespace Checkers
             NN.Train_Neural_Network(Result, Player1Filename.Text);
         }
 
-
-
         private void Train_Neural_Net_Complete(object sender, RunWorkerCompletedEventArgs e)
         {
             UpdateScore();
-           // User_Interface.ActiveForm.Text = "Checkers";
+            // User_Interface.ActiveForm.Text = "Checkers";
             EndGameTidyUp();
         }
     }

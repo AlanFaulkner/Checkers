@@ -5,7 +5,7 @@ namespace Checkers
 {
     internal class NN_MinMax : IPlayer
     {
-        private int MaxDepth = 1;
+        private int MaxDepth = 4;
 
         private PieceMovment Piece = new PieceMovment();
         private NN_Evaluator NN = new NN_Evaluator();
@@ -23,34 +23,26 @@ namespace Checkers
 
         public List<int> MakeMove(List<int> Gameboard, int Player)
         {
-            List<List<int>> MoveList = Piece.DetermineValidMoves(Gameboard, Player);
-            List<List<double>> Scores = new List<List<double>> { };
-            for (int i = 0; i < MoveList.Count; i++)
-            {
-                List<double> StateScore = new List<double> { };
-                StateScore.Add(i);
-                StateScore.Add(MinMaxScore(MoveList[i], Player));
-                Scores.Add(StateScore);
-            }
-            Scores = Scores.OrderByDescending(a => a[1]).ToList();
-            return MoveList[(int)Scores[0][0]];
+            return MinMax(Gameboard, Player);
         }
 
-        private double MinMaxScore(List<int> GameBoard, int Player, int Depth = 1)
+        private List<int> MinMax(List<int> GameBoard, int Player, int Depth = 1)
         {
-            List<List<int>> MoveList = Piece.DetermineValidMoves(GameBoard, -Player);
-            if (Depth >= MaxDepth || EndGame(GameBoard) || !MoveList.Any()) { return NN_ScoreState(GameBoard); }
+            List<List<int>> MoveList = Piece.DetermineValidMoves(GameBoard, Player);
+            List<double> LevelScore = new List<double> { };
+
+            if (Depth >= MaxDepth || EndGame(GameBoard) || !MoveList.Any()) { return GameBoard; }
             else
             {
-                List<double> LevelScore = new List<double> { };
                 for (int i = 0; i < MoveList.Count; i++)
                 {
-                    LevelScore.Add(MinMaxScore(MoveList[i], -Player, Depth + 1));
+                    List<int> State = MinMax(MoveList[i], -Player, Depth + 1);
+                    LevelScore.Add(NN_ScoreState(State));
                 }
-
-                if (Depth % 2 != 0) { return LevelScore.Max(); }
-                else { return LevelScore.Min(); }
             }
+
+            if (Depth % 2 != 0) { return MoveList[LevelScore.IndexOf(LevelScore.Max())]; }
+            else { return MoveList[LevelScore.IndexOf(LevelScore.Min())]; }
         }
 
         private bool EndGame(List<int> GameState)

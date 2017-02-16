@@ -41,8 +41,8 @@ of a bug somewhere in this algorithm as depth seems to have little effect on the
 
 NN_MinMaxPlayer:
 Similar to above but designed to use a Neural network as the scoring function. In contrast to Fogels work where he employs a MinMax search depth of 4 I’ve opted to forgo this setting 
-the max depth to 1. This means that the rather than determine the best move some distance in the future and then back propagate the relevant score through the search tree, I’d hope that 
-network can be trained to just calculate this back propagated score directly from the game board configuration.  I have yet to determine what effect this has on how well the network learns.
+the max depth to 1 for the purpose of generating an example network (included as NeuralNetPlayer.net) to prove proof of concept in a reasonably short time frame. As such it can be expected to 
+perform worse than minman algorithm. I'm currently trying out greater search depths to determine if this does improve the networks ability to play as expected.
 
 NN_Evaluator:
 This details the neural network itself. The network is a List<List<objects>> where each sublist represents a layer of N neurons. This class allows networks to be created from scratch using 

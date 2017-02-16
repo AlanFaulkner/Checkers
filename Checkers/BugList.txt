@@ -2,7 +2,6 @@
 
 Only sigmoid function seems to work with the backpropagation algorithm. Attempts to use TanH, sigmoidal, and ReLu result in NaN error for the weights.
 
-Changing the depth in minmax player doesn’t seem to drastically improve AI.
 MinMax player is somewhat defeatist.
 
 Evolve_NN_Evaluator is slow. Paralysation of main algorithm may help to speed this up.
